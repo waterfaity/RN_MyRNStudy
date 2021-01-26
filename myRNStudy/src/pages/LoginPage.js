@@ -1,11 +1,16 @@
 import React from 'react';
 import { TextInput, View, Image, StyleSheet, StatusBar } from 'react-native';
 import Button from '../components/Button';
+import LoadingDialog from '../dialog/LoadingDialog';
 
 export default class LoginPage extends React.Component {
     constructor() {
         super();
-        this.state = { userName: null, password: null };
+        this.state = {
+            userName: 'waterfairy',
+            password: '123456',
+            loadingDialogVisible: false,
+        };
 
     }
 
@@ -17,7 +22,8 @@ export default class LoginPage extends React.Component {
         } else if (this.state.password == null) {
             alert("请输入密码");
         } else {
-            alert(this.state.userName + "_" + this.state.password);
+            //展示dialog
+            this.setState({ loadingDialogVisible: true, loadingDialogText: "下载中" })
         }
     }
 
@@ -35,6 +41,8 @@ export default class LoginPage extends React.Component {
     render() {
         return <View
             style={styles.root}>
+            {/* 加载dialog */}
+            <LoadingDialog text={this.state.loadingDialogText} visible={this.state.loadingDialogVisible} />
             {/* 状态栏 */}
             <StatusBar backgroundColor="#981090" />
             {/* logo */}
@@ -50,6 +58,7 @@ export default class LoginPage extends React.Component {
                 <TextInput
                     style={styles.input}
                     placeholder="请输入帐号"
+                    defaultValue={this.state.userName}
                     onChangeText={(text) => this.onAccountInput(text)} />
             </View>
             {/* 密码 */}
@@ -61,6 +70,7 @@ export default class LoginPage extends React.Component {
                     style={styles.input}
                     textContentType="password"
                     secureTextEntry={true}
+                    defaultValue={this.state.password}
                     placeholder="请输入密码"
                     onChangeText={(text) => this.onPasswordInput(text)} />
             </View>

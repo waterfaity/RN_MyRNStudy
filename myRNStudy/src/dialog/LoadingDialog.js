@@ -1,58 +1,107 @@
-import React, { useState } from 'react';
-import { Modal, View, Image, Text } from 'react-native';
-import isEmpty from '../utils/TextUtils';
+import React from "react";
+import { Animated, Easing, Modal, Pressable, Text, View } from "react-native";
+import isEmpty from "../utils/TextUtils";
+
+
+export type propTypes = {
+  visible?: Boolean,
+  cancelable?: Boolean,
+  text?: String,
+};
+
 export default class LoadingDialog extends React.Component {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            //dialog 文本
-            text: props.text,
-            //展示文本
-            textDislay: isEmpty(props.text) ? "none" : "flex",
-            //展示dialog
-            visible: props.visible
-        }
-    }
+  state = {
+    //dialog 文本
+    text: this.props.text,
+    //展示dialog
+    visible: this.props.visible,
+    //是否可以取消
+    cancelable: this.props.cancelable,
+    //loading旋转值
+    rotateValue: new Animated.Value(0),
+  };
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            text: nextProps.text,
-            textDislay: isEmpty(nextProps.text) ? "none" : "flex",
-            visible: nextProps.visible
-        })
-    }
+  //旋转动画
+  rotateAnim = Animated.timing(this.state.rotateValue, {
+    easing: Easing.linear,
+    duration: 1500,
+    toValue: 1,
+    useNativeDriver: true,
+  });
 
-    showText() {
-        this.setState((text) => { return { text: text } })
-        this.setTextDisplay()
-    }
+  constructor(props) {
+    super(props);
+  }
 
-    setTextDisplay = () => {
-        this.state.textDislay = isEmpty(this.state.text) ? "none" : "flex"
-        this.setState(() => { return {} })
-    }
+  /**
+   * 展示dialog
+   */
+  show() {
+    //动画展示
+    this.setState({ visible: true });
+    Animated.loop(this.rotateAnim).start();
+  }
 
-    render() {
-        return <Modal
-            transparent={true}
-            onRequestClose={() => { }}
-            visible={this.state.visible}>
-            <View
-                style={{
-                    height: '100%',
-                    borderRadius: 5,
-                    backgroundColor: '#00000033',
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}>
-                <View style={{ backgroundColor: 'white', borderRadius: 5, padding: 10 }}>
-                    <Image
-                        style={{ width: 40, height: 40 }}
-                        source={require("../../resources/images/loading.png")} />
-                    <Text style={{ color: "black", fontSize: 14, display: this.state.textDislay }}>{this.state.text}</Text>
-                </View>
-            </View>
-        </Modal>
-    }
+  /**
+   * 显示文本
+   * @param text
+   */
+  setText(text: String) {
+    this.setState({ text: text });
+  }
+
+  /**
+   * 隐藏dialog
+   */
+  dismiss() {
+    Animated.loop(this.rotateAnim).stop();
+    this.setState({ visible: false });
+  }
+
+
+  render() {
+    return <Modal
+      transparent={true}
+      onRequestClose={() => {
+      }}
+      visible={this.state.visible}>
+      <Pressable
+        onPress={() => {
+          if (this.state.cancelable) this.dismiss();
+        }}>
+        <View
+          style={{
+            height: "100%",
+            borderRadius: 5,
+            backgroundColor: "#00000033",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <View style={{ backgroundColor: "white", borderRadius: 5, padding: 10 }}>
+            <Animated.Image
+              style={{
+                width: 40,
+                height: 40,
+                transform: [{
+                  rotate: this.state.rotateValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0deg", "359deg"],
+                  }),
+                }],
+              }}
+              source={require("../../resources/images/loading.png")}>
+            </Animated.Image>
+
+            <Text style={{
+              color: "black",
+              fontSize: 14,
+              display: isEmpty(this.state.text) ? "none" : "flex",
+            }}>{this.state.text}</Text>
+          </View>
+        </View>
+      </Pressable>
+
+    </Modal>;
+  }
 }

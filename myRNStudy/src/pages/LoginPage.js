@@ -61,15 +61,15 @@ export default class LoginPage extends React.Component {
       <LoadingDialog text={this.state.loadingDialogText}
                      visible={this.state.loadingDialogVisible}
                      cancelable={true}
-                     ref={this.dialogRef} />;
+                     ref={this.dialogRef} />
       {/* 状态栏 */
       }
-      <StatusBar backgroundColor="#981090" />;
+      <StatusBar backgroundColor="#981090" />
       {/* logo */
       }
       <Image
         style={styles.logo}
-        source={require("../../resources/images/dog.png")} />;
+        source={require("../../resources/images/dog.png")} />
       {/* 帐号 */
       }
       <View
@@ -82,7 +82,7 @@ export default class LoginPage extends React.Component {
           placeholder="请输入帐号"
           defaultValue={this.state.userName}
           onChangeText={(text) => this.state.userName = text} />
-      </View>;
+      </View>
       {/* 密码 */
       }
       <View style={styles.input_form}>
@@ -96,13 +96,13 @@ export default class LoginPage extends React.Component {
           defaultValue={this.state.password}
           placeholder="请输入密码"
           onChangeText={(text) => this.state.userName = text} />
-      </View>;
+      </View>
       {/* 登录 */
       }
       <Button
         style={styles.login}
         title="登录"
-        onPress={() => this.onLoginPress()} />;
+        onPress={() => this.onLoginPress()} />
     </View>;
   }
 }

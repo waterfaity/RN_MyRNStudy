@@ -5,8 +5,15 @@ import Button from "../components/Button";
 import LoadingDialog from "../dialog/LoadingDialog";
 import { BASE_URL } from "../http/HttpConfig";
 
+
 export default class LoginPage extends React.Component {
+
+    static navigationOptions = ({ navigation, screenProps }) => {
+        return { header: "主页" };
+    };
+
     dialogRef = React.createRef();
+    loginSuccess = false;
 
     constructor() {
         super();
@@ -92,13 +99,19 @@ export default class LoginPage extends React.Component {
             .then((result) => {
                 //   console.log(result);
                 this.saveAccountInfo(JSON.stringify(result));
+                this.loginSuccess = true;
             })
             .catch(err => {
+                this.loginSuccess = true;
                 console.log("请求失败->" + err.toString());
             })
             .done(result => {
                 console.log("请求完成");
-                //this.dialogRef.current.dismiss();
+                this.dialogRef.current.dismiss();
+                if (this.loginSuccess) {
+                    //跳转页面
+                    this.props.navigation.navigate("HomePage");
+                }
             });
     }
 

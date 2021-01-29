@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.13.3",
+    "@types/react-native": "^0.63.46",
+    "node-haste": "^2.12.0",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-native": "0.63.4",

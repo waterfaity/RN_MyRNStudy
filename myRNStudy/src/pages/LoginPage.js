@@ -6,7 +6,6 @@ import LoadingDialog from "../dialog/LoadingDialog";
 import { BASE_URL } from "../http/HttpConfig";
 
 export default class LoginPage extends React.Component {
-
     dialogRef = React.createRef();
 
     constructor() {
@@ -35,13 +34,17 @@ export default class LoginPage extends React.Component {
             });
     }
 
+    jumpPage() {
+    }
+
     /**
      * 保存帐号信息
      */
-    saveAccountInfo() {
+    saveAccountInfo(userModule) {
         AsyncStorage.setItem("userName", this.state.userName);
         AsyncStorage.setItem("password", this.state.password);
-        console.log(this.state.userName + "_" + this.state.password);
+        AsyncStorage.setItem("useModule", userModule);
+        //  console.log(this.state.userName + "_" + this.state.password + "\n" + userModule);
     }
 
     /**
@@ -69,13 +72,6 @@ export default class LoginPage extends React.Component {
         formBody.append("account", this.state.userName);
         formBody.append("password", this.state.password);
 
-        let jsonBody = JSON.stringify({
-            account: this.state.userName,
-            password: this.state.password,
-        });
-
-        console.log(JSON.stringify(formBody));
-
         fetch(url, {
             method: "POST", //请求方法 默认get
             headers: {
@@ -94,15 +90,15 @@ export default class LoginPage extends React.Component {
                 return response.json();
             })
             .then((result) => {
-                this.saveAccountInfo();
-                console.log(result);
+                //   console.log(result);
+                this.saveAccountInfo(JSON.stringify(result));
             })
             .catch(err => {
                 console.log("请求失败->" + err.toString());
             })
             .done(result => {
                 console.log("请求完成");
-                this.dialogRef.current.dismiss();
+                //this.dialogRef.current.dismiss();
             });
     }
 
@@ -110,10 +106,7 @@ export default class LoginPage extends React.Component {
         return <View
             style={styles.root}>
             {/*加载dialog */}
-            <LoadingDialog text={this.state.loadingDialogText}
-                           visible={this.state.loadingDialogVisible}
-                           cancelable={true}
-                           ref={this.dialogRef} />
+            <LoadingDialog ref={this.dialogRef} cancelable={false} />
             {/* 状态栏 */}
             <StatusBar backgroundColor="#981090" />
             {/* logo */}
@@ -152,7 +145,6 @@ export default class LoginPage extends React.Component {
                 onPress={() => this.onLoginPress()} />
         </View>;
     }
-
 }
 
 const styles = StyleSheet.create({

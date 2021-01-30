@@ -8,10 +8,6 @@ import { BASE_URL } from "../http/HttpConfig";
 
 export default class LoginPage extends React.Component {
 
-    static navigationOptions = ({ navigation, screenProps }) => {
-        return { header: "主页" };
-    };
-
     dialogRef = React.createRef();
     loginSuccess = false;
 
@@ -26,6 +22,11 @@ export default class LoginPage extends React.Component {
         };
         this.getAccountInfo();
     }
+
+    jumpHomePage(useModule: String) {
+        this.props.navigation.navigate("HomePage", { userModule: useModule } );
+    }
+
 
     /**
      * 获取帐号信息
@@ -110,7 +111,11 @@ export default class LoginPage extends React.Component {
                 this.dialogRef.current.dismiss();
                 if (this.loginSuccess) {
                     //跳转页面
-                    this.props.navigation.navigate("HomePage");
+                    AsyncStorage.getItem("useModule").then((useModule) => {
+                        console.log("获取到用户数据:" + useModule);
+                        //跳转页面传递参数 userModule
+                        this.jumpHomePage(useModule);
+                    });
                 }
             });
     }

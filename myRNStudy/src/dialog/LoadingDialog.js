@@ -83,7 +83,7 @@ export default class LoadingDialog extends React.Component<Props> {
      * @param cancelable
      */
     setCancelAble(cancelable: boolean) {
-        this.state.cancelable = cancelable;
+                            this.state.cancelable = cancelable;
     }
 
     /**

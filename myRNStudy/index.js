@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import LoginPage from "./src/pages/LoginPage";
+import MainPage from "./src/pages/MainPage";
 import HomePage from "./src/pages/HomePage";
 import MinePage from "./src/pages/MinePage";
 
@@ -25,19 +26,19 @@ export default class TestApp extends Component {
         return (<NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen name="LoginPage" component={LoginPage} options={{ headerShown: false, title: "登录页" }} />
+                <Stack.Screen name="MinePage" component={LoginPage} options={{ headerShown: false, title: "我的" }} />
+                <Stack.Screen name="HomePage" component={HomePage} options={{ headerShown: false, title: "首页" }} />
                 <Stack.Screen
-                    name="HomePage"
-                    component={HomePage}
+                    name="MainPage"
+                    component={MainPage}
                     options={{
                         headerShown: false,
-                        header: undefined,
                         title: "主页",
                         headerStyle: { backgroundColor: "green" },
                         headerTintColor: "white",
                         headerTitleStyle: { fontWeight: "bold" },
-                        //headerTitle: props => <LogoTitle {...props} />,
-                    }} />
-                <Stack.Screen name="MinePage" component={MinePage} />
+                    }}>
+                </Stack.Screen>
             </Stack.Navigator>
         </NavigationContainer>);
     }

@@ -1,35 +1,57 @@
 import React from "react";
-import { Text } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import MinePage from "./MinePage";
+import HomePage from "./HomePage";
+import { Image } from "react-native";
+import { ColorGrayLight, ThemeColor } from "../../resources/Colors";
+import Button from "../components/Button";
 
-export default class HomePage extends React.Component {
+const Tab = createBottomTabNavigator();
 
-
-    constructor(props) {
-        super(props);
-        props.navigation.setOptions({
-            title: "哈哈",
-            headerRight: () => (
-                <Text style={{
-                    color: "white",
-                    width: 50,
-                    height: 50,
-                    textAlign: "center",
-                    textAlignVertical: "center",
-                }}>菜单</Text>),
-            headerLeft: () => (
-                <Text style={{
-                    color: "white",
-                    width: 50,
-                    height: 50,
-                    textAlign: "center",
-                    textAlignVertical: "center",
-                }}>返回</Text>),
-        });
-        const extras = props.route.params;
-        console.log("homePage: userModule:" + extras.userModule);
+export default class MainPage extends React.Component {
+    constructor() {
+        super();
     }
 
     render() {
-        return <Text>这是home页</Text>;
+        return <Tab.Navigator
+            initialRouteName="HomePage"
+            tabBarOptions={{
+                activeTintColor: ThemeColor,
+                inactiveTintColor: ColorGrayLight,
+            }}>
+            <Tab.Screen
+                name="HomePage"
+                component={HomePage}
+                options={{
+                    tabBarBadge: 3,
+                    tabBarLabel: "首页", tabBarButton: () => {
+                        return <Button style={{ backgroundColor: "white" }} title="首页" />;
+                    },
+                    tabBarIcon: ({ color, size }) => {
+                        return <Image
+                            style={{ width: size, height: size, tintColor: color }}
+                            source={require("../../resources/images/ic_home.png")} />;
+                    },
+                }} />
+            <Tab.Screen
+                name="MinePage"
+                component={MinePage}
+                options={{
+                    tabBarBadge: 9,
+                    tabBarLabel: "我的",
+                    tabBarButton: () => {
+                        //        this.props.navigation.navigate("MainPage", { userModule: useModule });
+                        return <Button onPress={() => {
+                            this.props.navigation.jumpTo("HomePage",{owner:"MinePage"});
+                        }} style={{ backgroundColor: "white" }} title="我的" />;
+                    },
+                    tabBarIcon: ({ color, size }) => {
+                        return <Image
+                            style={{ width: size, height: size, tintColor: color }}
+                            source={require("../../resources/images/ic_mine.png")} />;
+                    },
+                }} />
+        </Tab.Navigator>;
     }
 }

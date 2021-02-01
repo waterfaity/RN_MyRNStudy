@@ -24,7 +24,7 @@ export default class LoginPage extends React.Component {
     }
 
     jumpHomePage(useModule: String) {
-        this.props.navigation.navigate("HomePage", { userModule: useModule } );
+        this.props.navigation.navigate("MainPage", { userModule: useModule });
     }
 
 

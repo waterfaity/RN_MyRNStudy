@@ -4,6 +4,7 @@ import { Image, StatusBar, StyleSheet, TextInput, View } from "react-native";
 import Button from "../components/Button";
 import LoadingDialog from "../dialog/LoadingDialog";
 import { BASE_URL } from "../http/HttpConfig";
+import requestService from "../http/RequestService";
 
 
 export default class LoginPage extends React.Component {
@@ -66,7 +67,20 @@ export default class LoginPage extends React.Component {
         } else {
             //展示dialog
             this.dialogRef.current.show();
-            this.requestLogin();
+            requestService.login(this.state.userName, this.state.password, {
+                onSuccess: (result) => {
+                    this.saveAccountInfo(JSON.stringify(result.data));
+                    //跳转页面
+                    AsyncStorage.getItem("useModule").then((useModule) => {
+                        console.log("获取到用户数据:" + useModule);
+                        //跳转页面传递参数 userModule
+                        this.jumpHomePage(useModule);
+                    });
+                },
+                onError: (errCode, errMsg) => {
+
+                },
+            });
         }
     }
 

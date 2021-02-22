@@ -1,24 +1,13 @@
 import React, { Component } from "react";
-import { Image, Platform } from "react-native";
+import { Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import LoginPage from "./src/pages/LoginPage";
 import MainPage from "./src/pages/MainPage";
 import HomePage from "./src/pages/HomePage";
-import MinePage from "./src/pages/MinePage";
 
 const Stack = createStackNavigator();
-
-function LogoTitle() {
-    return (
-        <Image
-            style={{ width: 50, height: 50 }}
-            source={require("./resources/images/dog.png")}
-        />
-    );
-}
-
 export default class TestApp extends Component {
     render() {
         console.log(Platform.Version + Platform.select({ android: 12, ios: 23 }));

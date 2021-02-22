@@ -30,7 +30,7 @@ export default class HomePage extends React.Component {
         return <View>
             <TextInput style={styles.input} />
             <View style={styles.banner_content_view}>
-                <Swiper>
+                <Swiper style={{}} >
                     {
                         this.state.bannerList === null ? <View /> : this.initBannerView()
                     }

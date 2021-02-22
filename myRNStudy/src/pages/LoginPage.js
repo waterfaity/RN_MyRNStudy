@@ -66,9 +66,9 @@ export default class LoginPage extends React.Component {
             alert("请输入密码");
         } else {
             //展示dialog
-            this.dialogRef.current.show();
             requestService.login(this.state.userName, this.state.password, {
                 onSuccess: (result) => {
+                    this.dialogRef.current.dismiss();
                     this.saveAccountInfo(JSON.stringify(result.data));
                     //跳转页面
                     AsyncStorage.getItem("useModule").then((useModule) => {
@@ -78,60 +78,10 @@ export default class LoginPage extends React.Component {
                     });
                 },
                 onError: (errCode, errMsg) => {
-
+                    this.dialogRef.current.dismiss();
                 },
             });
         }
-    }
-
-    /**
-     * 登录
-     * */
-    requestLogin() {
-        const url = BASE_URL + "/user/login";
-
-        let formBody = new FormData();
-        formBody.append("account", this.state.userName);
-        formBody.append("password", this.state.password);
-
-        fetch(url, {
-            method: "POST", //请求方法 默认get
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "multipart/form-data", //数据格式 json或者key-value形式
-            },
-            body: formBody,
-        })
-            .then(response => {
-                console.log("status->" + response.status);
-                if (response.ok) {
-                    console.log("请求ok");
-                } else {
-                    console.log("请求不ok");
-                }
-                return response.json();
-            })
-            .then((result) => {
-                //   console.log(result);
-                this.saveAccountInfo(JSON.stringify(result));
-                this.loginSuccess = true;
-            })
-            .catch(err => {
-                this.loginSuccess = true;
-                console.log("请求失败->" + err.toString());
-            })
-            .done(result => {
-                console.log("请求完成");
-                this.dialogRef.current.dismiss();
-                if (this.loginSuccess) {
-                    //跳转页面
-                    AsyncStorage.getItem("useModule").then((useModule) => {
-                        console.log("获取到用户数据:" + useModule);
-                        //跳转页面传递参数 userModule
-                        this.jumpHomePage(useModule);
-                    });
-                }
-            });
     }
 
     render() {

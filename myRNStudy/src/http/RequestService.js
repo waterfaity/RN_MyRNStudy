@@ -16,8 +16,8 @@ class RequestService {
      * 查询轮播图
      */
     queryBanner(callback) {
-        const url = "/banner/queryBanner";
-        HttpRequest.requestPost(url, null, callback);
+        const url = "/banner/queryBannerList";
+        HttpRequest.requestGet(url, null, callback);
     }
 }
 

@@ -9,7 +9,7 @@ HttpRequest.requestGet = function(api, params, callback, baseUrl) {
     if (baseUrl === undefined) baseUrl = BASE_URL;
     let url = baseUrl + api;
 
-    if (params !== undefined) {
+    if (params !== null && params !== undefined) {
         url += "?";
         Object.keys(params).forEach((key, index) => {
             url += ((index === 0 ? "" : "&") + key + "=" + params[key]);
@@ -59,6 +59,7 @@ function request(responsePromise, callback) {
             callback.onSuccess(result);
         })
         .catch((err) => {
+            console.log("result: " + (err.errCode || -1) + ":" + err.message);
             callback.onError(err.errCode || -1, err.message);
         });
 }

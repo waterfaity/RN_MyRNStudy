@@ -1,14 +1,39 @@
 import React from "react";
-import { Dimensions, Image, StyleSheet, TextInput, View } from "react-native";
-import { ColorGrayLight } from "../../resources/Colors";
+import {
+    ActivityIndicator,
+    Dimensions,
+    FlatList,
+    Image,
+    NativeModules,
+    Platform,
+    Pressable,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import requestService from "../http/RequestService";
 import Swiper from "react-native-swiper";
+import { ColorTheme, TextColorLight, TextColorMain } from "../../resources/Colors";
 
+const { StatusBarManager } = NativeModules;
+
+let bannerHeight = Dimensions.get("screen").width * (7 / 18.0);
+let screenWidth = Dimensions.get("screen").width;
+let itemTextWidth = screenWidth * 0.9 - 10 - 150;
 export default class HomePage extends React.Component {
 
     state = {
         bannerList: null,
+        cookList: null,
+        isLoading: false,
+
     };
+    pageNo: number = 1;
+    pageSize: number = 10;
+    searchKey: string = "";
+    flatListHeight = 100;
+    itemTextWidth = 100;
 
     constructor() {
         super();
@@ -16,6 +41,7 @@ export default class HomePage extends React.Component {
     }
 
     initData() {
+        //查询轮播
         requestService.queryBanner({
             onSuccess: (result) => {
                 this.setState({ bannerList: result.data });
@@ -23,19 +49,76 @@ export default class HomePage extends React.Component {
             onError: (errCode, msg) => {
             },
         });
+
+        this.queryData(this.pageNo, this.pageSize);
+        let statusBarHeight = Platform.OS === "ios" ? 20 : StatusBarManager.HEIGHT;
+        this.flatListHeight = Dimensions.get("screen").height - 10 - 40 - 10 - bannerHeight - 10 - statusBarHeight - 49;
+
     }
 
 
     render() {
         return <View>
-            <TextInput style={styles.input} />
+            {/*搜索输入框*/}
+            <Text style={styles.input} onPress={() => this.props.navigation.navigate("SearchPage")}>红烧肉</Text>
+            {/*轮播图*/}
             <View style={styles.banner_content_view}>
-                <Swiper style={{}} >
+                <Swiper key={this.state.bannerList == null ? 0 : this.state.bannerList.size}
+                        autoplayTimeout={6}
+                        style={styles.wrapper}
+                        autoplay={true}
+                        loop={true}>
                     {
                         this.state.bannerList === null ? <View /> : this.initBannerView()
                     }
                 </Swiper>
             </View>
+            {/*列表*/}
+            <FlatList
+
+                refreshControl={<RefreshControl
+                    onRefresh={() => {
+                        this.queryData(1, this.pageSize);
+                    }}
+                    refreshing={this.state.isLoading} />}
+
+                onEndReached={() => {
+                    console.log("加载更多--" + this.pageNo + "\n");
+                    this.queryData(this.pageNo + 1, this.pageSize);
+                }}
+                ListFooterComponent={() =>
+                    <View style={{ alignItems: "center" }}>
+                        <ActivityIndicator animating={true} color={ColorTheme} style={{ marginTop: 5 }} />
+                        <Text style={{ marginBottom: 5 }}>加载中...</Text>
+                    </View>}
+
+                style={{ marginTop: 10, marginBottom: 0, height: this.flatListHeight }}
+                data={this.state.cookList}
+                renderItem={(itemInfo) =>
+                    <Pressable onPress={() => {
+                        console.log(itemInfo.item.coverUrl);
+                    }}>
+                        <View style={styles.item_cook}>
+                            {/*图片*/}
+                            <Image style={styles.item_cook_image}
+                                   source={{ uri: itemInfo.item.coverUrl }} />
+                            {/*分割线*/}
+                            <View style={styles.item_line} />
+                            {/*标题*/}
+                            <Text style={styles.item_title}
+                                  numberOfLines={1}
+                                  ellipsizeMode={"tail"}>
+                                {itemInfo.item.name}
+                            </Text>
+                            {/*介绍*/}
+                            <Text style={styles.item_content}
+                                  numberOfLines={4}
+                                  ellipsizeMode={"tail"}>
+                                {itemInfo.item.introduce}
+                            </Text>
+                        </View>
+                    </Pressable>
+                } />
         </View>;
     }
 
@@ -49,22 +132,50 @@ export default class HomePage extends React.Component {
         });
         return images;
     }
+
+    queryData(pageNo, pageSize) {
+        //查询默认餐谱列表
+        requestService.queryCookList(pageNo, pageSize, {
+            onSuccess: (result) => {
+                let tempDataList:Array;
+                if (result.data.currentPage === 1) {
+                    tempDataList = result.data.dataList;
+                } else {
+                    tempDataList = this.state.cookList;
+                    console.log(pageNo + ":" + tempDataList);
+                    tempDataList.push(result.data.dataList);
+                }
+
+
+                debugger
+                this.pageNo = result.data.currentPage;
+                this.setState({ cookList: tempDataList, isLoading: false });
+
+            },
+            onError: (errCode, msg) => {
+
+            },
+        });
+    }
 }
 
 const styles = StyleSheet.create({
+    wrapper: {},
     input: {
+        textAlignVertical: "center",
+        paddingLeft: 20,
+        paddingRight: 20,
         width: "90%",
         height: 40,
-        top: 10,
+        marginTop: 10,
         left: "5%",
-        bottom: 10,
-        backgroundColor: ColorGrayLight,
+        backgroundColor: "#88888833",
         borderRadius: 25,
     },
     banner_content_view: {
         width: "100%",
-        height: Dimensions.get("screen").width * (7 / 18.0),
-        top: 20,
+        height: bannerHeight,
+        marginTop: 10,
     },
     banner_image: {
         width: "90%",
@@ -72,4 +183,42 @@ const styles = StyleSheet.create({
         height: "100%",
         borderRadius: 15,
     },
+    item_cook: {
+        flex: 1,
+        marginTop: 10,
+        left: "5%",
+        width: "90%",
+        right: "5%",
+    },
+    item_cook_image: {
+        borderRadius: 10,
+        width: 150,
+        height: 100,
+    },
+    item_line: {
+        marginTop: 10,
+        backgroundColor: "#00000011",
+        width: "100%",
+        height: 1,
+    },
+
+    item_title: {
+        position: "absolute",
+        color: TextColorMain,
+        left: 160,
+        fontSize: 18,
+        width: itemTextWidth,
+        fontWeight: "600",
+    },
+    item_content: {
+        width: itemTextWidth,
+        position: "absolute",
+        color: TextColorLight,
+        height: 70,
+        top: 30,
+        left: 160,
+        fontSize: 14,
+        fontWeight: "600",
+    },
+
 });

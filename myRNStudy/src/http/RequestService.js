@@ -19,6 +19,17 @@ class RequestService {
         const url = "/banner/queryBannerList";
         HttpRequest.requestGet(url, null, callback);
     }
+
+    /**
+     * 查询菜谱
+     * @param pageNo
+     * @param pageSize
+     * @param callback
+     */
+    queryCookList(pageNo, pageSize, callback) {
+        const url = "/cookMenu/queryCookMenuList";
+        HttpRequest.requestGet(url, { pageNo: pageNo, pageSize: pageSize }, callback);
+    }
 }
 
 const requestService = new RequestService();

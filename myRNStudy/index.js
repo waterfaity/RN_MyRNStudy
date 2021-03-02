@@ -7,6 +7,7 @@ import LoginPage from "./src/pages/LoginPage";
 import MainPage from "./src/pages/MainPage";
 import HomePage from "./src/pages/HomePage";
 import SearchPage from "./src/pages/SearchPage";
+import CookMenuDetailPage from "./src/pages/CookMenuDetailPage";
 
 const Stack = createStackNavigator();
 export default class TestApp extends Component {
@@ -19,6 +20,8 @@ export default class TestApp extends Component {
                 <Stack.Screen name="MinePage" component={LoginPage} options={{ headerShown: false, title: "我的" }} />
                 <Stack.Screen name="HomePage" component={HomePage} options={{ headerShown: false, title: "首页" }} />
                 <Stack.Screen name="SearchPage" component={SearchPage} options={{ headerShown: false, title: "搜索" }} />
+                <Stack.Screen name="CookMenuDetailPage" component={CookMenuDetailPage}
+                              options={{ headerShown: false, title: "菜谱详情" }} />
                 <Stack.Screen
                     name="MainPage"
                     component={MainPage}

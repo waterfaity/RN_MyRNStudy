@@ -15,7 +15,7 @@ HttpRequest.requestGet = function(api, params, callback, baseUrl) {
             url += ((index === 0 ? "" : "&") + key + "=" + params[key]);
         });
     }
-    console.log("request: " + url);
+    //console.log("request: " + url);
     request(fetch(url), callback);
 };
 
@@ -31,7 +31,7 @@ HttpRequest.requestPost = function(api, params, callback, baseUrl) {
             urlLog += ((index === 0 ? "" : "&") + key + "=" + params[key]);
         });
     }
-    console.log("request: " + urlLog);
+    //console.log("request: " + urlLog);
     request(fetch(url, {
         method: "POST",
         headers: {
@@ -55,11 +55,11 @@ function request(responsePromise, callback) {
             if (result.resultCode !== 0) {
                 throw new ResponseError(result.resultCode, result.msg);
             }
-            console.log("result: " + JSON.stringify(result));
+            //console.log("result: " + JSON.stringify(result));
             callback.onSuccess(result);
         })
         .catch((err) => {
-            console.log("result: " + (err.errCode || -1) + ":" + err.message);
+            //console.log("result: " + (err.errCode || -1) + ":" + err.message);
             callback.onError(err.errCode || -1, err.message);
         });
 }

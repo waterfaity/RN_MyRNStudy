@@ -34,6 +34,7 @@ export default class HomePage extends React.Component {
     searchKey: string = "";
     flatListHeight = 100;
     itemTextWidth = 100;
+    canLoadMore = true;
 
     constructor() {
         super();
@@ -53,7 +54,6 @@ export default class HomePage extends React.Component {
         this.queryData(this.pageNo, this.pageSize);
         let statusBarHeight = Platform.OS === "ios" ? 20 : StatusBarManager.HEIGHT;
         this.flatListHeight = Dimensions.get("screen").height - 10 - 40 - 10 - bannerHeight - 10 - statusBarHeight - 49;
-
     }
 
 
@@ -74,14 +74,19 @@ export default class HomePage extends React.Component {
                 </Swiper>
             </View>
             {/*列表*/}
-            <FlatList
 
+
+            <FlatList
+                keyExtractor={(item, index) => {
+                    index.toString();
+                }}
                 refreshControl={<RefreshControl
                     onRefresh={() => {
                         this.queryData(1, this.pageSize);
                     }}
                     refreshing={this.state.isLoading} />}
 
+                onEndReachedThreshold={0.01}
                 onEndReached={() => {
                     console.log("加载更多--" + this.pageNo + "\n");
                     this.queryData(this.pageNo + 1, this.pageSize);
@@ -96,8 +101,9 @@ export default class HomePage extends React.Component {
                 data={this.state.cookList}
                 renderItem={(itemInfo) =>
                     <Pressable onPress={() => {
-                        console.log(itemInfo.item.coverUrl);
+                        this.props.navigation.navigate("CookMenuDetailPage", { CookMenu: itemInfo.item });
                     }}>
+
                         <View style={styles.item_cook}>
                             {/*图片*/}
                             <Image style={styles.item_cook_image}
@@ -137,20 +143,17 @@ export default class HomePage extends React.Component {
         //查询默认餐谱列表
         requestService.queryCookList(pageNo, pageSize, {
             onSuccess: (result) => {
-                let tempDataList:Array;
+                let tempDataList: Array;
                 if (result.data.currentPage === 1) {
                     tempDataList = result.data.dataList;
                 } else {
                     tempDataList = this.state.cookList;
-                    console.log(pageNo + ":" + tempDataList);
-                    tempDataList.push(result.data.dataList);
+                    result.data.dataList.forEach((item) => {
+                        tempDataList.push(item);
+                    });
                 }
-
-
-                debugger
                 this.pageNo = result.data.currentPage;
                 this.setState({ cookList: tempDataList, isLoading: false });
-
             },
             onError: (errCode, msg) => {
 
@@ -185,6 +188,7 @@ const styles = StyleSheet.create({
     },
     item_cook: {
         flex: 1,
+        height: 110,
         marginTop: 10,
         left: "5%",
         width: "90%",

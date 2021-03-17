@@ -1,10 +1,11 @@
 import React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Image, StatusBar, StyleSheet, TextInput, View } from "react-native";
+import {Image, StatusBar, StyleSheet, TextInput, View} from "react-native";
 import Button from "../components/Button";
 import LoadingDialog from "../dialog/LoadingDialog";
-import { BASE_URL } from "../http/HttpConfig";
+import {BASE_URL} from "../http/HttpConfig";
 import requestService from "../http/RequestService";
+import {ColorTheme} from "../../resources/Colors";
 
 
 export default class LoginPage extends React.Component {
@@ -25,7 +26,7 @@ export default class LoginPage extends React.Component {
     }
 
     jumpHomePage(useModule: String) {
-        this.props.navigation.navigate("MainPage", { userModule: useModule });
+        this.props.navigation.navigate("MainPage", {userModule: useModule});
     }
 
 
@@ -35,11 +36,11 @@ export default class LoginPage extends React.Component {
     getAccountInfo() {
         AsyncStorage.getItem("userName")
             .then((userName) => {
-                this.setState({ userName: userName });
+                this.setState({userName: userName});
             });
         AsyncStorage.getItem("password")
             .then((password) => {
-                this.setState({ password: password });
+                this.setState({password: password});
             });
     }
 
@@ -66,6 +67,7 @@ export default class LoginPage extends React.Component {
             alert("请输入密码");
         } else {
             //展示dialog
+            this.dialogRef.current.show()
             requestService.login(this.state.userName, this.state.password, {
                 onSuccess: (result) => {
                     this.dialogRef.current.dismiss();
@@ -88,43 +90,43 @@ export default class LoginPage extends React.Component {
         return <View
             style={styles.root}>
             {/*加载dialog */}
-            <LoadingDialog ref={this.dialogRef} cancelable={false} />
+            <LoadingDialog ref={this.dialogRef} cancelable={false}/>
             {/* 状态栏 */}
-            <StatusBar backgroundColor="#981090" />
+            <StatusBar backgroundColor={ColorTheme} />
             {/* logo */}
             <Image
                 style={styles.logo}
-                source={require("../../resources/images/dog.png")} />
+                source={require("../../resources/images/dog.png")}/>
             {/* 帐号 */}
             <View
                 style={styles.input_form}>
                 <Image
                     style={styles.image}
-                    source={require("../../resources/images/user.png")} />
+                    source={require("../../resources/images/user.png")}/>
                 <TextInput
                     style={styles.input}
                     placeholder="请输入帐号"
                     defaultValue={this.state.userName}
-                    onChangeText={(text) => this.state.userName = text} />
+                    onChangeText={(text) => this.state.userName = text}/>
             </View>
             {/* 密码 */}
             <View style={styles.input_form}>
                 <Image
                     style={styles.image}
-                    source={require("../../resources/images/pwd.png")} />
+                    source={require("../../resources/images/pwd.png")}/>
                 <TextInput
                     style={styles.input}
                     textContentType="password"
                     secureTextEntry={true}
                     defaultValue={this.state.password}
                     placeholder="请输入密码"
-                    onChangeText={(text) => this.state.password = text} />
+                    onChangeText={(text) => this.state.password = text}/>
             </View>
             {/* 登录 */}
             <Button
                 style={styles.login}
                 title="登录"
-                onPress={() => this.onLoginPress()} />
+                onPress={() => this.onLoginPress()}/>
         </View>;
     }
 }

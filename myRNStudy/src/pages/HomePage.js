@@ -21,6 +21,7 @@ import BannerBean from "../data/BannerBean";
 import BaseResponse from "../http/BaseResponse";
 import BaseListPageBean from "../http/BaseListPageBean";
 import BaseListResponse from "../http/BaseListResponse";
+import {array} from "prop-types";
 
 const {StatusBarManager} = NativeModules;
 
@@ -30,8 +31,17 @@ let itemTextWidth = screenWidth * 0.9 - 10 - 150;
 export default class HomePage extends React.Component {
 
     state = {
+        // test1: [],
+        // test2: array,
+        // test3: Array,
+        // test4: Array(),
+        // test5: Array(3),
+        // test7: Array<CookMenu>(12),
+        // test8: new Array<CookMenu>(12),
+        // test9: Array < CookMenu >= new Array<CookMenu>(12),
+        // test10: Array < CookMenu >= [],
         bannerList: [],
-        cookList: Array < CookMenu >= [],
+        cookList: [],
         isLoading: false,
 
     };
@@ -49,13 +59,10 @@ export default class HomePage extends React.Component {
 
     initData() {
         //查询轮播
+        debugger
         requestService.queryBanner({
             onSuccess: (result) => {
-                debugger
-                let tempArray: Array<BannerBean> = []
-                tempArray.push(result.data)
-                this.setState({bannerList: tempArray});
-                debugger
+                this.setState({bannerList: result.data});
             },
             onError: (errCode, msg) => {
                 this.setState({bannerList: []});
@@ -141,13 +148,14 @@ export default class HomePage extends React.Component {
 
     initBannerView() {
         let images = [];
-        debugger
-        this.state.bannerList.forEach((banner) => {
-            images.push(
-                <Image style={styles.banner_image}
-                       source={{uri: banner.imgUrl}}/>,
-            );
-        });
+        if (this.state.bannerList instanceof Array) {
+            this.state.bannerList.forEach((banner) => {
+                images.push(
+                    <Image style={styles.banner_image}
+                           source={{uri: banner.imgUrl}}/>,
+                );
+            });
+        }
         return images;
     }
 

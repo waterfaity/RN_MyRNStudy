@@ -15,7 +15,7 @@ HttpRequest.requestGet = function(api, params, callback, baseUrl) {
             url += ((index === 0 ? "" : "&") + key + "=" + params[key]);
         });
     }
-    //console.log("request: " + url);
+    console.log("request: " + url);
     request(fetch(url), callback);
 };
 
@@ -31,7 +31,7 @@ HttpRequest.requestPost = function(api, params, callback, baseUrl) {
             urlLog += ((index === 0 ? "" : "&") + key + "=" + params[key]);
         });
     }
-    //console.log("request: " + urlLog);
+    console.log("request: " + urlLog);
     request(fetch(url, {
         method: "POST",
         headers: {

@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Platform} from "react-native";
+import {Platform, Pressable, Text} from "react-native";
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 
@@ -8,6 +8,7 @@ import MainPage from "./src/pages/MainPage";
 import HomePage from "./src/pages/HomePage";
 import SearchPage from "./src/pages/SearchPage";
 import CookMenuDetailPage from "./src/pages/CookMenuDetailPage";
+import {ColorGray} from "./resources/Colors";
 
 const Stack = createStackNavigator();
 export default class TestApp extends Component {
@@ -23,8 +24,9 @@ export default class TestApp extends Component {
                 <Stack.Screen name="CookMenuDetailPage"
                               component={CookMenuDetailPage}
                               options={(navigation, route) => ({
-                                  headerShown: true, title: "菜谱详情",
-                                  onBackPress: navigation.goBack
+                                  headerShown: true,
+                                  title: "菜谱详情",
+                                  onBackPress: navigation.goBack,
                               })}/>
                 <Stack.Screen
                     name="MainPage"

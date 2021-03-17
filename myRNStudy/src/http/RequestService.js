@@ -12,16 +12,16 @@ class RequestService {
      * @param callback
      */
     login(account, password, callback) {
-        const url = "/user/login";
-        HttpRequest.requestPost(url, {account: account, password: password}, callback);
+        const api = "/user/login";
+        HttpRequest.requestPost(api, {account: account, password: password}, callback);
     }
 
     /**
      * 查询轮播图
      */
     queryBanner(callback: BaseCallback<BaseResponse<Array<CookMenu>>>) {
-        const url = "/banner/queryBannerList";
-        HttpRequest.requestGet(url, null, callback);
+        const api = "/banner/queryBannerList";
+        HttpRequest.requestGet(api, null, callback);
     }
 
     /**
@@ -31,8 +31,18 @@ class RequestService {
      * @param callback
      */
     queryCookList(pageNo: number, pageSize: number, callback: BaseCallback<BaseResponse<BaseListPageBean<CookMenu>>>) {
-        const url = "/cookMenu/queryCookMenuList";
-        HttpRequest.requestGet(url, {pageNo: pageNo, pageSize: pageSize}, callback);
+        const api = "/cookMenu/queryCookMenuList";
+        HttpRequest.requestGet(api, {pageNo: pageNo, pageSize: pageSize}, callback);
+    }
+
+    /**
+     * 查询菜谱详情
+     * @param cookMenuId
+     * @param callBack
+     */
+    queryCookMenuDetail(cookMenuId: number, callBack: BaseCallback<BaseResponse<CookMenu>>) {
+        const api = "/cookMenu/queryCookMenuDetailById";
+        HttpRequest.requestGet(api, {cookMenuId: cookMenuId}, callBack);
     }
 }
 

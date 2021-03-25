@@ -68,6 +68,7 @@ export default class CookMenuDetailPage extends React.Component {
             {/*文本信息展示*/}
             <View style={{position: "absolute"}}>
                 <Text style={styles.cook_menu_name}>{this.state.cookMenu.name}</Text>
+                <Text style={styles.cook_menu_user_nick_name}>热度: {this.state.cookMenu.readTimes}</Text>
                 <Text style={styles.cook_menu_user_nick_name}>标签:{this.state.cookMenu.mark}</Text>
                 <Text style={styles.cook_menu_user_nick_name}>创建者:{this.state.cookMenu.userNickName}</Text>
                 <Text style={styles.cook_menu_user_nick_name}>创建时间:{this.state.cookMenu.createTime}</Text>
@@ -129,7 +130,9 @@ export default class CookMenuDetailPage extends React.Component {
         let itemViews = []
         this.state.stepList.forEach((cookStepBean: CookStepBean, index) => {
             itemViews.push(<View style={styles.cook_step_container}>
-                <Image style={styles.cook_step_img} source={{uri: cookStepBean.imgUrl}}/>
+                {
+                    this.getImage(cookStepBean)
+                }
                 <View style={styles.cook_step_info_container}>
                     <Text style={styles.cook_step_title}>步骤{(index + 1) + ":" + cookStepBean.title}</Text>
                     <Text>时间: {cookStepBean.duration}分钟</Text>
@@ -141,6 +144,10 @@ export default class CookMenuDetailPage extends React.Component {
             </View>)
         });
         return itemViews;
+    }
+
+    getImage(cookStepBean: CookStepBean) {
+        return <Image style={styles.cook_step_img} source={{uri: cookStepBean.imgUrl}}/>
     }
 }
 const styles = StyleSheet.create({

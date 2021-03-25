@@ -1,5 +1,7 @@
 export default class CookMenu {
     id: number
+    readTimes: number
+    cookTimes: number
     userId: String
     userNickName: String
     mark: String

@@ -59,7 +59,6 @@ export default class HomePage extends React.Component {
 
     initData() {
         //查询轮播
-        debugger
         requestService.queryBanner({
             onSuccess: (result) => {
                 this.setState({bannerList: result.data});

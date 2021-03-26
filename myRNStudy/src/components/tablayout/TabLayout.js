@@ -1,12 +1,22 @@
 // import React from "react";
 import React from 'react';
 
-import {ColorValue, ScrollView, Text, View} from "react-native";
+import {
+    ColorValue,
+    ScrollView,
+    Text,
+    View,
+    Animated,
+    NativeSyntheticEvent,
+    NativeScrollEvent,
+    Easing, CompositeAnimation
+} from "react-native";
 import Tab from "./Tab";
 import TabView from "./TabView";
 import {ColorTheme} from "../../../resources/Colors";
 import type OnTabSelectedListener from "./OnTabSelectListener";
 import type {ViewProps} from "react-native/Libraries/Components/View/ViewPropTypes";
+import {EndResult} from "react-native/Libraries/Animated/src/animations/Animation";
 
 /**
  * 自定义navigationBar
@@ -14,36 +24,113 @@ import type {ViewProps} from "react-native/Libraries/Components/View/ViewPropTyp
  */
 
 type TabLayoutProps = $ReadOnly<{|
+    //未选中颜色
     normalColor?: ColorValue,
+    //选中颜色
     selectedColor?: ColorValue,
+    //字体大小
     tabTextSize?: number,
-    paddingHor?: number,
+    //tabView 水平方向padding
+    tabPaddingHor?: number,
+    //选择监听
     onTabSelectedListener?: OnTabSelectedListener,
-    style?: ViewProps
+    //样式
+    style?: ViewProps,
+    //选中的selectTab  用于外部设置指定的tab
+    selectedTab?: Tab
 |}>;
 
 
 export class TabLayout extends React.Component<TabLayoutProps> {
+    /**
+     * 指示器更新用到的数据
+     * @type {{toIndicateTranslateXValue: number, dIndicateTranslateXValue: number, currentWidthValue: number, currentIndicateTranslateXValue: number, dWidthValue: number, fromWidthValue: number, fromIndicateTranslateXValue: number, toWidthValue: number}}
+     */
+    animData = {
+        //指示器 偏移x
+        currentIndicateTranslateXValue: 0,
+        fromIndicateTranslateXValue: 0,
+        toIndicateTranslateXValue: 0,
+        dIndicateTranslateXValue: 0,
 
+        //指示器 宽度width
+        currentWidthValue: 0,
+        fromWidthValue: 0,
+        toWidthValue: 0,
+        dWidthValue: 0,
+
+        //scrollView
+        currentScrollX: 0,
+
+    }
+
+    /**
+     * tabLayoutWidth
+     */
+    tabLayoutWidth
+    /**
+     * 指示器偏移动画
+     */
+    transAnim: CompositeAnimation
+    /**
+     * scrollView 引用
+     * @type {React.RefObject<unknown>}
+     */
+    scrollViewRef = React.createRef()
+    /**
+     * 选中的tab
+     */
     selectedTab: Tab
     //属性默认值
     static defaultProps = {
         normalColor: "#333333",
         selectedColor: ColorTheme,
         tabTextSize: 14,
-        paddingHor: 10,
+        tabPaddingHor: 10,
     };
 
 
     state = {
+        //tab集合
         tabs: [],
-        indicateLeft: 10,
+        //指示器宽度
         indicateWidth: 30,
+        translateXAnimatedValue: new Animated.Value(0)
     }
+
+    getTabs(): Tab[] {
+        return this.state.tabs
+    }
+
 
     constructor(props) {
         super(props);
-        this.that = this
+        this.state.translateXAnimatedValue.addListener((state) => {
+            //设置当前偏移值
+            this.animData.currentIndicateTranslateXValue = state.value
+            //当前动画进行到的的比例 ratio
+            let ratio = (this.animData.currentIndicateTranslateXValue - this.animData.fromIndicateTranslateXValue) / this.animData.dIndicateTranslateXValue
+            //计算当前比例的宽度
+            let currentWidth = this.animData.fromWidthValue + ratio * this.animData.dWidthValue
+            //校验
+            if (this.animData.dWidthValue !== 0 && !isNaN(currentWidth)) {
+                //设置当前宽度值
+                this.animData.currentWidthValue = currentWidth
+                //更新状态
+                this.setState({indicateWidth: this.animData.currentWidthValue})
+            }
+        })
+    }
+
+    /**
+     * 更新选中状态
+     */
+    componentDidUpdate(preProps) {
+        //选中
+        this.selectTab(this.props.selectedTab)
+        //动画更新 tabLayout 位置 选中的居中显示
+        if (preProps.selectedTab !== this.props.selectedTab)
+            this.animScrollView()
     }
 
 
@@ -64,11 +151,6 @@ export class TabLayout extends React.Component<TabLayoutProps> {
             minWidth={this.getTabMinWidth()}
             tab={tab}/>)
         return tab
-    }
-
-
-    getTabMinWidth() {
-        return 50
     }
 
 
@@ -116,29 +198,32 @@ export class TabLayout extends React.Component<TabLayoutProps> {
         }
     }
 
+    getTabMinWidth() {
+        return 50
+    }
+
     /**
      * 更新状态 长度/位置/动画过度
      * @param selectedTab
      */
     updateSelect(selectedTab) {
-        //计算指示条 坐标
-        let left = 0
+        //计算指示条 坐标需要的偏移值
+        let indicateTranslateX = 0
         this.state.tabs.forEach((tab: Tab, index) => {
             //tab.viewRef.current !=null
             // 判断初始化是否完成
             if (tab.viewRef.current != null) {
                 //遍历所有 并更新
                 tab.viewRef.current.setSelect(selectedTab === tab)
-
                 //遍历当前的tab的宽度
                 let tabViewWidth = tab.viewRef.current.tabViewWidth
                 //如果遍历的tab 与已经选中tab 相等  则设置指示条left/width
                 if (selectedTab === tab) {
-                    left += this.props.paddingHor
-                    let width = tabViewWidth - 2 * this.props.paddingHor
-                    this.setState({indicateLeft: left, indicateWidth: width})
+                    indicateTranslateX += this.props.tabPaddingHor
+                    let width = tabViewWidth - 2 * this.props.tabPaddingHor
+                    this.animIndicator(indicateTranslateX, width)
                 } else {
-                    left += tabViewWidth
+                    indicateTranslateX += tabViewWidth
                 }
             }
         })
@@ -150,31 +235,98 @@ export class TabLayout extends React.Component<TabLayoutProps> {
         this.setState({tabs: this.state.tabs})
     }
 
+
+    /**
+     * 上次选中的tab  - > 本次选中的tab
+     * 主要更新 指示器的 (indicateTranslateX,width)
+     * @param indicateTranslateX
+     * @param width
+     */
+    animIndicator(indicateTranslateX: number, width: number) {
+
+        if (this.transAnim !== undefined) {
+            this.transAnim.stop
+            this.transAnim = undefined
+        }
+
+        //设置指示器偏移 from  /  to  /  d
+        this.animData.fromIndicateTranslateXValue = this.animData.currentIndicateTranslateXValue
+        this.animData.toIndicateTranslateXValue = indicateTranslateX
+        this.animData.dIndicateTranslateXValue = this.animData.toIndicateTranslateXValue - this.animData.fromIndicateTranslateXValue
+
+        //设置指示器宽度 from  /  to  /  d
+        this.animData.fromWidthValue = this.animData.currentWidthValue
+        this.animData.toWidthValue = width
+        this.animData.dWidthValue = this.animData.toWidthValue - this.animData.fromWidthValue
+
+        this.transAnim = Animated.timing(this.state.translateXAnimatedValue, {
+            //线性差值器
+            easing: Easing.linear,
+            duration: 200,
+            toValue: indicateTranslateX,
+            //原生驱动方式
+            useNativeDriver: true,
+        })
+        this.transAnim.start()
+    }
+
+    componentWillUnmount(): void {
+    }
+
+    /**
+     *动画更新 tabLayout 位置 选中的居中显示
+     *旧的scrollX - > 新的scrollX
+     *
+     */
+    animScrollView() {
+        let scrollView: ScrollView = this.scrollViewRef.current
+        let scrollX = this.animData.toIndicateTranslateXValue +
+            this.animData.currentScrollX -
+            this.tabLayoutWidth / 2 +
+            this.animData.toWidthValue / 2
+        console.log("--------------------")
+
+        console.log("this.animData.currentScrollX:" + this.animData.currentScrollX)
+        console.log("--------------------")
+
+
+        console.log("滚动值:" + scrollX)
+        if (!isNaN(scrollX))
+            scrollView.scrollTo({x: scrollX, y: 0, animated: true})
+    }
+
     render() {
-        return (<View style={this.props.style}>
+        return <View style={this.props.style}>
+            {/*scrollView*/}
             <ScrollView
+                onLayout={(event) => {
+                    this.tabLayoutWidth = event.nativeEvent.layout.width
+                }}
+                ref={this.scrollViewRef}
+                onMomentumScrollEnd={(event: NativeSyntheticEvent<NativeScrollEvent>) => {
+                    this.animData.currentScrollX = event.nativeEvent.contentOffset.x
+                }}
                 showsHorizontalScrollIndicator={false}
                 persistentScrollbar={false}
                 horizontal={true}>
                 <View>
+                    {/*tabViews*/}
                     <View style={{flex: 1, flexDirection: "row"}}>
                         {this.generateTabViews()}
                     </View>
-                    <View style={{
-                        flexDirection: "row",
-                        width: "100%",
-                    }}>
-                        <View style={{
-                            marginLeft: this.state.indicateLeft,
-                            width: this.state.indicateWidth,
-                            height: 3,
-                            borderRadius: 4,
-                            backgroundColor: ColorTheme
-                        }}/>
-                    </View>
+                    {/*指示器*/}
+                    <Animated.View style={{
+                        transform: [{
+                            translateX: this.state.translateXAnimatedValue,
+                        }],
+                        width: this.state.indicateWidth,
+                        height: 3,
+                        borderRadius: 4,
+                        backgroundColor: ColorTheme
+                    }}/>
                 </View>
             </ScrollView>
-        </View>)
+        </View>
     }
 
     /**

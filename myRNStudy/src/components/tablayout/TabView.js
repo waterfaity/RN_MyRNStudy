@@ -44,8 +44,8 @@ export default class TabView extends React.Component<TabViewProps> {
             }}>
             <Text
                 style={{
-                    paddingLeft: this.props.tab.parent.props.paddingHor,
-                    paddingRight: this.props.tab.parent.props.paddingHor,
+                    paddingLeft: this.props.tab.parent.props.tabPaddingHor,
+                    paddingRight: this.props.tab.parent.props.tabPaddingHor,
                     //颜色
                     color: this.state.select ? this.props.tab.parent.props.selectedColor : this.props.tab.parent.props.normalColor,
                     //大小

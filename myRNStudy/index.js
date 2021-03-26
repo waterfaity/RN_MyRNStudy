@@ -7,7 +7,7 @@ import LoginPage from "./src/pages/LoginPage";
 import MainPage from "./src/pages/MainPage";
 import HomePage from "./src/pages/HomePage";
 import SearchPage from "./src/pages/SearchPage";
-import CookMenuDetailPage from "./src/pages/CookMenuDetailPage";
+import CookMenuDetailRootPage from "./src/pages/CookMenuDetailRootPage";
 import {ColorGray} from "./resources/Colors";
 
 const Stack = createStackNavigator();
@@ -22,7 +22,7 @@ export default class TestApp extends Component {
                 <Stack.Screen name="HomePage" component={HomePage} options={{headerShown: false, title: "首页"}}/>
                 <Stack.Screen name="SearchPage" component={SearchPage} options={{headerShown: false, title: "搜索"}}/>
                 <Stack.Screen name="CookMenuDetailPage"
-                              component={CookMenuDetailPage}
+                              component={CookMenuDetailRootPage}
                               options={(navigation, route) => ({
                                   headerShown: true,
                                   title: "菜谱详情",

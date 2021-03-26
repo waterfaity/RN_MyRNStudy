@@ -22,9 +22,9 @@ export default class NutritionPage extends React.Component <Props> {
      *食材/营养
      * @returns {[]}
      */
-    initMaterialViews(materialList: CookMaterialBean[]) {
+    initMaterialViews(materialList?: CookMaterialBean[]) {
         let itemViews = []
-        materialList.forEach((cookMaterialBean, index) => {
+        materialList?.forEach((cookMaterialBean, index) => {
             itemViews.push(<View style={styles.material_container}>
                 <Text style={styles.material}>{cookMaterialBean.name}</Text>
                 <Text style={styles.material_phr}>{cookMaterialBean.phr + cookMaterialBean.unit}</Text>

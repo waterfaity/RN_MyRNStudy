@@ -9,34 +9,14 @@ type Props = {
 }
 
 export default class StepPage extends React.Component <Props> {
+    state = {
+        stepList: []
+    }
 
     constructor(props) {
         super(props)
-        this.state = {
-            cookMenu: props.cookMenu,
-            materialList: [],
-            seasoningList: [],
-            nutritionList: [],
-            stepList: []
-        }
-    }
-
-    /**
-     *
-     * @returns {[]}
-     */
-    initMaterialViews(materialList: CookMaterialBean[]) {
-        let itemViews = []
-        materialList.forEach((cookMaterialBean, index) => {
-            itemViews.push(<View style={styles.material_container}>
-                <Text style={styles.material}>{cookMaterialBean.name}</Text>
-                <Text style={styles.material_phr}>{cookMaterialBean.phr + cookMaterialBean.unit}</Text>
-            </View>)
-            if (index < materialList.length - 1) {
-                itemViews.push(<View style={styles.material_line}/>)
-            }
-        });
-        return itemViews;
+        this.state.stepList = props.cookMenu.stepList
+        this.setState({stepList: this.state.stepList})
     }
 
     /**
@@ -60,6 +40,7 @@ export default class StepPage extends React.Component <Props> {
 
             </View>)
         });
+        if (itemViews.length === 0) itemViews.push((<Text>没有数据</Text>))
         return itemViews;
     }
 
@@ -71,29 +52,10 @@ export default class StepPage extends React.Component <Props> {
     render() {
         return <ScrollView
             style={styles.introduce_scroll_view}>
-
-            <Text style={styles.type_title}>食材</Text>
-            {
-                this.initMaterialViews(this.state.materialList)
-            }
-
-            <Text style={styles.type_title}>佐料</Text>
-            {
-                this.initMaterialViews(this.state.seasoningList)
-            }
-
-            <Text style={styles.type_title}>营养价值</Text>
-            {
-                this.initMaterialViews(this.state.nutritionList)
-            }
-
-            <Text style={styles.type_title}>步骤</Text>
             {
                 this.initCookStopViews()
             }
 
-            <Text style={styles.type_title}>简介</Text>
-            <Text style={styles.introduce_content}>{this.state.cookMenu.introduce}</Text>
         </ScrollView>
     }
 
@@ -102,28 +64,6 @@ export default class StepPage extends React.Component <Props> {
 const styles = StyleSheet.create({
     introduce_scroll_view: {
         flex: 1,
-    },
-    material_container: {
-        paddingBottom: 5,
-        paddingTop: 5,
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "space-between"
-    },
-    material: {
-        fontSize: 16,
-        marginLeft: 15,
-    },
-    material_phr: {
-        marginRight: 15,
-        fontSize: 16,
-        marginLeft: 15,
-    },
-    material_line: {
-        marginRight: 15,
-        marginLeft: 15,
-        height: 1,
-        backgroundColor: ColorGrayLight
     },
     cook_step_container: {
         marginLeft: 15,
@@ -149,32 +89,4 @@ const styles = StyleSheet.create({
         position: "absolute",
         marginLeft: 160,
     },
-    type_title: {
-        paddingTop: 2,
-        paddingBottom: 2,
-        paddingLeft: 15,
-        paddingRight: 15,
-        backgroundColor: ColorGrayLight,
-        fontSize: 18,
-        justifyContent: "center",
-    },
-    introduce: {
-        marginLeft: 15,
-        marginTop: 10,
-        fontSize: 18,
-        justifyContent: "center",
-    },
-    introduce_content: {
-        marginLeft: 15,
-        marginTop: 10,
-        marginRight: 15,
-        fontSize: 16,
-        justifyContent: "center",
-    },
-    back_press: {
-        width: 50,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
-    }
 });

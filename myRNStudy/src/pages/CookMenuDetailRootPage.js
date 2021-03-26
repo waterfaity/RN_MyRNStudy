@@ -1,9 +1,8 @@
 import React from "react";
-import {Image, Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
+import {Image, Pressable, StyleSheet, Text, View} from "react-native";
 
 import CookMenu from "../data/CookMenu";
-import {ColorGray, ColorGrayLight, ColorTheme} from "../../resources/Colors";
-import DetailPage from "./detail/DetailPage";
+import {ColorGray, ColorTheme} from "../../resources/Colors";
 import requestService from "../http/RequestService";
 import PreparePage from "./detail/PreparePage";
 import StepPage from "./detail/StepPage";
@@ -84,7 +83,6 @@ export default class CookMenuDetailRootPage extends React.Component {
                 <NutritionPage tabLabel="营养" cookMenu={this.state.cookMenu}/>
                 <PreparePage tabLabel="备菜" cookMenu={this.state.cookMenu}/>
                 <StepPage tabLabel="步骤" cookMenu={this.state.cookMenu}/>
-                <DetailPage tabLabel="评论" cookMenu={this.state.cookMenu}/>
             </ScrollableTabView>
         </View>;
     }

@@ -3,34 +3,36 @@ import {Image, ScrollView, StyleSheet, Text, View} from "react-native";
 import CookMenu from "../../data/CookMenu";
 import requestService from "../../http/RequestService";
 import {ColorGrayLight} from "../../../resources/Colors";
+import {set} from "react-native-reanimated";
 
 type Props = {
     cookMenu?: CookMenu
 }
 
 export default class PreparePage extends React.Component <Props> {
+    state = {
+        materialList: [],
+        seasoningList: [],
+    }
 
     constructor(props) {
         super(props)
-        this.state = {
-            cookMenu: props.cookMenu,
-            materialList: [],
-            seasoningList: [],
-            nutritionList: [],
-            stepList: []
-        }
+        this.state.materialList = props.cookMenu.materialList
+        this.state.seasoningList = props.cookMenu.seasoningList
+        this.setState({
+            materialList: this.state.materialList,
+            seasoningList: this.state.seasoningList
+        })
     }
 
 
-
-
     /**
-     *
+     *食材/营养
      * @returns {[]}
      */
-    initMaterialViews(materialList: CookMaterialBean[]) {
+    initMaterialViews(materialList?: CookMaterialBean[]) {
         let itemViews = []
-        materialList.forEach((cookMaterialBean, index) => {
+        materialList?.forEach((cookMaterialBean, index) => {
             itemViews.push(<View style={styles.material_container}>
                 <Text style={styles.material}>{cookMaterialBean.name}</Text>
                 <Text style={styles.material_phr}>{cookMaterialBean.phr + cookMaterialBean.unit}</Text>
@@ -39,37 +41,9 @@ export default class PreparePage extends React.Component <Props> {
                 itemViews.push(<View style={styles.material_line}/>)
             }
         });
+        if (itemViews.length === 0) itemViews.push((<Text>没有数据</Text>))
         return itemViews;
     }
-
-    /**
-     * 步骤
-     * @returns {[]}
-     */
-    initCookStopViews() {
-        let itemViews = []
-        this.state.stepList.forEach((cookStepBean: CookStepBean, index) => {
-            itemViews.push(<View style={styles.cook_step_container}>
-                {
-                    this.getImage(cookStepBean)
-                }
-                <View style={styles.cook_step_info_container}>
-                    <Text style={styles.cook_step_title}>步骤{(index + 1) + ":" + cookStepBean.title}</Text>
-                    <Text>时间: {cookStepBean.duration}分钟</Text>
-                    <Text>锅具: {cookStepBean.potName}</Text>
-                    <Text>温度: {cookStepBean.temperature}</Text>
-                </View>
-                <Text style={styles.cook_step_introduce}>简介:{cookStepBean.introduce}</Text>
-
-            </View>)
-        });
-        return itemViews;
-    }
-
-    getImage(cookStepBean: CookStepBean) {
-        return <Image style={styles.cook_step_img} source={{uri: cookStepBean.imgUrl}}/>
-    }
-
 
     render() {
         return <ScrollView
@@ -85,18 +59,6 @@ export default class PreparePage extends React.Component <Props> {
                 this.initMaterialViews(this.state.seasoningList)
             }
 
-            <Text style={styles.type_title}>营养价值</Text>
-            {
-                this.initMaterialViews(this.state.nutritionList)
-            }
-
-            <Text style={styles.type_title}>步骤</Text>
-            {
-                this.initCookStopViews()
-            }
-
-            <Text style={styles.type_title}>简介</Text>
-            <Text style={styles.introduce_content}>{this.state.cookMenu.introduce}</Text>
         </ScrollView>
     }
 
@@ -128,30 +90,6 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: ColorGrayLight
     },
-    cook_step_container: {
-        marginLeft: 15,
-        marginRight: 15,
-        marginTop: 10,
-        borderRadius: 10,
-        backgroundColor: "#dddddd"
-    },
-    cook_step_img: {
-        borderRadius: 10,
-        width: 150,
-        height: 100,
-    },
-    cook_step_title: {
-        fontSize: 16,
-        marginTop: 10,
-    },
-    cook_step_introduce: {
-        fontSize: 14,
-        margin: 8,
-    },
-    cook_step_info_container: {
-        position: "absolute",
-        marginLeft: 160,
-    },
     type_title: {
         paddingTop: 2,
         paddingBottom: 2,
@@ -161,23 +99,4 @@ const styles = StyleSheet.create({
         fontSize: 18,
         justifyContent: "center",
     },
-    introduce: {
-        marginLeft: 15,
-        marginTop: 10,
-        fontSize: 18,
-        justifyContent: "center",
-    },
-    introduce_content: {
-        marginLeft: 15,
-        marginTop: 10,
-        marginRight: 15,
-        fontSize: 16,
-        justifyContent: "center",
-    },
-    back_press: {
-        width: 50,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
-    }
 });

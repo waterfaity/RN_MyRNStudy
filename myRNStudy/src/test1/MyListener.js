@@ -1,10 +1,10 @@
-import MyData from "./MyData";
+import MyData from './MyData';
 
 export default class MyListener {
 
-    /**
-     *
-     * @param myData {MyData}
-     */
-    onGetData(myData: MyData){};
+  /**
+   *
+   * @param myData {MyData}
+   */
+  onGetData(myData: MyData) {};
 }

@@ -1,3 +1,3 @@
-export default class BaseListResponse<T>{
-    data:Array<T>
+export default class BaseListResponse<T> {
+  data: Array<T>;
 }

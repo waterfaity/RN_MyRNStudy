@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { StyleSheet, Switch, View } from "react-native";
+import React, { useState } from 'react';
+import { StyleSheet, Switch, View } from 'react-native';
 
 const TestSwitch = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   return (
-    <View style={styles.container}>
+    <View style={ styles.container }>
       <Switch
-        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+        thumbColor={ isEnabled ? '#f5dd4b' : '#f4f3f4' }
         ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleSwitch}
-        value={isEnabled}
+        onValueChange={ toggleSwitch }
+        value={ isEnabled }
       />
     </View>
   );
@@ -20,9 +20,9 @@ const TestSwitch = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 });
 
 export default TestSwitch;

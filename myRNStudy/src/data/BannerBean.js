@@ -1,3 +1,3 @@
-export default class BannerBean{
-    imgUrl :String
+export default class BannerBean {
+  imgUrl: String;
 }

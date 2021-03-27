@@ -1,11 +1,11 @@
-import Tab from "./Tab";
+import Tab from './Tab';
 
 interface OnTabSelectedListener {
-    onTabSelected(tab: Tab);
+  onTabSelected(tab: Tab);
 
-    onTabUnselected(tab: Tab);
+  onTabUnselected(tab: Tab);
 
-    onTabReselected(tab: Tab)
+  onTabReselected(tab: Tab)
 }
 
-export default OnTabSelectedListener
+export default OnTabSelectedListener;

@@ -1,24 +1,23 @@
-import {TabLayout} from "./TabLayout";
-import TabView from "./TabView";
-import React, {RefObject} from "react";
+import { TabLayout } from './TabLayout';
+import TabView from './TabView';
+import React from 'react';
 
 export default class Tab {
 
+  constructor() {
+  }
 
-    constructor() {
-    }
+  setText(text: String): Tab {
+    this.text = text;
+    return this;
+  }
 
-    setText(text: String): Tab {
-        this.text = text;
-        return this
-    }
+  select() {
+    this.parent.selectTab(this);
+  }
 
-    select() {
-        this.parent.selectTab(this)
-    }
-
-    text: String
-    parent: TabLayout
-    view: TabView
-    viewRef  = React.createRef ()
+  text: String;
+  parent: TabLayout;
+  view: TabView;
+  viewRef = React.createRef();
 }

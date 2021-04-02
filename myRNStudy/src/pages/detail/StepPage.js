@@ -16,14 +16,19 @@ export default class StepPage extends React.Component <Props> {
     this.state.stepList = props.cookMenu.stepList;
     this.setState({ stepList: this.state.stepList });
   }
-
+  componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
+    if (prevProps.cookMenu !== this.props.cookMenu) {
+      this.state.stepList = this.props.cookMenu.stepList;
+      this.setState({ stepList: this.state.stepList });
+    }
+  }
   /**
    * 步骤
    * @returns {[]}
    */
   initCookStopViews() {
     let itemViews = [];
-    this.state.stepList.forEach((cookStepBean: CookStepBean, index) => {
+    this.state.stepList?.forEach((cookStepBean: CookStepBean, index) => {
       itemViews.push(<View style={ styles.cook_step_container }>
         {
           this.getImage(cookStepBean)

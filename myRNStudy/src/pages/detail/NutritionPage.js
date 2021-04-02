@@ -18,6 +18,13 @@ export default class NutritionPage extends React.Component <Props> {
     this.setState({ nutritionList: this.state.nutritionList });
   }
 
+  componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
+    if (prevProps.cookMenu !== this.props.cookMenu) {
+      this.state.nutritionList = this.props.cookMenu.nutritionList;
+      this.setState({ nutritionList: this.state.nutritionList });
+    }
+  }
+
   /**
    *食材/营养
    * @returns {[]}

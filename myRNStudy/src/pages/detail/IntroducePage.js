@@ -13,13 +13,13 @@ export default class IntroducePage extends React.Component <Props> {
     super(props);
   }
 
+
   render() {
     return <ScrollView
       style={ styles.introduce_scroll_view }>
       <Text style={ styles.introduce_content }>{ this.props.cookMenu.introduce }</Text>
     </ScrollView>;
   }
-
 }
 
 const styles = StyleSheet.create({

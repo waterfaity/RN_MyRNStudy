@@ -8,7 +8,9 @@ import PreparePage from './detail/PreparePage';
 import StepPage from './detail/StepPage';
 import IntroducePage from './detail/IntroducePage';
 import NutritionPage from './detail/NutritionPage';
-import CommendPage from './detail/CommendPage';
+import CommentPage from './detail/CommentPage';
+import { TabLayout } from '../components/tablayout/TabLayout';
+import ViewPager from '@react-native-community/viewpager';
 
 let ScrollableTabView = require('react-native-scrollable-tab-view');
 
@@ -27,15 +29,19 @@ export default class CookMenuDetailRootPage extends React.Component {
   };
 
   state = {
-    cookMenu: CookMenu
+    cookMenu: CookMenu,
+    currentPos: 0
   };
+
+  viewPagerRef = React.createRef();
+  tabLayoutRef = React.createRef();
 
   constructor(props) {
     super(props);
     props.navigation.setOptions(this.navigationOptions);
-    let cookMenu = props.route.params['CookMenu'];
-    this.setState({ cookMenu: cookMenu });
-    this.queryDetail(cookMenu);
+    this.state.cookMenu = props.route.params['CookMenu'];
+    this.setState({ cookMenu: this.state.cookMenu });
+    this.queryDetail(this.state.cookMenu);
   }
 
   /**
@@ -77,12 +83,39 @@ export default class CookMenuDetailRootPage extends React.Component {
         <Text style={ styles.cook_menu_user_nick_name }>创建时间:{ this.state.cookMenu.createTime }</Text>
       </View>
 
-      <ScrollableTabView tabBarActiveTextColor={ ColorTheme }>
+      {/*<TabLayout*/ }
+      {/*  autoScroll={ false }*/ }
+      {/*  ref={ this.tabLayoutRef }*/ }
+      {/*  onTabSelectedListener={ {*/ }
+      {/*    onTabSelected: (tab, pos) => {*/ }
+      {/*      this.viewPagerRef.current.setPage(pos);*/ }
+      {/*    }*/ }
+      {/*  } }*/ }
+      {/*  selectedPos={ this.state.currentPos }*/ }
+      {/*  style={ { height: 45 } } dataArray={ ['评论', '简介', '营养', '备菜', '步骤'] }/>*/ }
+
+
+      {/*<ViewPager*/ }
+      {/*  ref={ this.viewPagerRef }*/ }
+      {/*  onPageScroll={ (pageScrollEvent) => {*/ }
+      {/*    this.tabLayoutRef.current.onScrollTo(pageScrollEvent.nativeEvent.position, pageScrollEvent.nativeEvent.offset);*/ }
+      {/*  } }*/ }
+      {/*  onPageSelected={ (event) => {*/ }
+      {/*    this.setState({ currentPos: event.nativeEvent.position });*/ }
+      {/*  } }*/ }
+      {/*  style={ { width: '100%', height: '100%', flex: 1 } }>*/ }
+      {/*  <CommentPage cookMenu={ this.state.cookMenu }/>*/ }
+      {/*  <IntroducePage cookMenu={ this.state.cookMenu }/>*/ }
+      {/*  <NutritionPage cookMenu={ this.state.cookMenu }/>*/ }
+      {/*  <PreparePage cookMenu={ this.state.cookMenu }/>*/ }
+      {/*  <StepPage cookMenu={ this.state.cookMenu }/>*/ }
+      {/*</ViewPager>*/ }
+      <ScrollableTabView tabBarUnderlineStyle={ { backgroundColor: ColorTheme, borderRadius: 3 } } tabBarActiveTextColor={ ColorTheme } style={ { marginTop: 10 } }>
         <IntroducePage tabLabel="简介" cookMenu={ this.state.cookMenu }/>
         <NutritionPage tabLabel="营养" cookMenu={ this.state.cookMenu }/>
         <PreparePage tabLabel="备菜" cookMenu={ this.state.cookMenu }/>
         <StepPage tabLabel="步骤" cookMenu={ this.state.cookMenu }/>
-        <CommendPage tabLabel="评论" cookMenu={ this.state.cookMenu }/>
+        <CommentPage tabLabel="评论" cookMenu={ this.state.cookMenu }/>
       </ScrollableTabView>
     </View>;
   }

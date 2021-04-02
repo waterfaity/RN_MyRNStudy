@@ -22,6 +22,16 @@ export default class PreparePage extends React.Component <Props> {
       seasoningList: this.state.seasoningList
     });
   }
+  componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
+    if (prevProps.cookMenu !== this.props.cookMenu) {
+      this.state.materialList = this.props.cookMenu.materialList;
+      this.state.seasoningList = this.props.cookMenu.seasoningList;
+      this.setState({
+        materialList: this.state.materialList,
+        seasoningList: this.state.seasoningList
+      });
+    }
+  }
 
   /**
    *食材/营养

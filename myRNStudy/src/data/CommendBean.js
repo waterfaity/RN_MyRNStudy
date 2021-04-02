@@ -10,7 +10,7 @@ export default class CommendBean {
   parentId: number;
   createTime: String;
   content: String;
-  praise: number;
+  praiseNum: number;
   isPraised: number;
   subComments: Array<CommendBean>;
 }

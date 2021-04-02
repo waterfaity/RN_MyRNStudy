@@ -1,7 +1,7 @@
 import Tab from './Tab';
 
 interface OnTabSelectedListener {
-  onTabSelected(tab: Tab);
+  onTabSelected(tab: Tab, pos: number);
 
   onTabUnselected(tab: Tab);
 

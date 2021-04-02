@@ -55,7 +55,7 @@ class RequestService {
    * @param pageSize
    * @param callback
    */
-  queryCookCommendList(userId: number, cookMenuId: number, pageNo: number, pageSize: number, callback: BaseCallback<BaseResponse<BaseListPageBean<CommendBean>>>) {
+  queryCookCommendList(userId: String, cookMenuId: number, pageNo: number, pageSize: number, callback: BaseCallback<BaseResponse<BaseListPageBean<CommendBean>>>) {
     const api = '/cookMenu/queryCommentList';
     HttpRequest.requestGet(api, {
       userId: userId,
@@ -63,6 +63,22 @@ class RequestService {
       pageNo: pageNo,
       pageSize: pageSize
     }, callback);
+  }
+
+  /**
+   * 点赞
+   * @param userId
+   * @param commentId
+   * @param praise
+   * @param callback
+   */
+  cookMenuCommentPraise(userId: String, commentId: number, praise: number, callback: BaseCallback<BaseResponse<{
+    commentId: number,
+    userId: String,
+    praise: number
+  }>>) {
+    const api = '/cookMenu/praise';
+    HttpRequest.requestPost(api, { userId: userId, commentId: commentId, praise: praise }, callback);
   }
 }
 

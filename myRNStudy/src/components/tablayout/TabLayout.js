@@ -14,6 +14,7 @@ import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropT
  */
 
 type TabLayoutProps = $ReadOnly<{|
+  dataArray?: Array<String>,
   //未选中颜色
   normalColor?: ColorValue,
   //选中颜色
@@ -27,7 +28,10 @@ type TabLayoutProps = $ReadOnly<{|
   //样式
   style?: ViewProps,
   //选中的selectTab  用于外部设置指定的tab
-  selectedTab?: Tab
+  selectedTab?: Tab,
+  selectedPos?: number,
+  //自动滚动
+  autoScroll?: boolean,
 |}>;
 
 export class TabLayout extends React.Component<TabLayoutProps> {
@@ -75,7 +79,8 @@ export class TabLayout extends React.Component<TabLayoutProps> {
     normalColor: '#333333',
     selectedColor: ColorTheme,
     tabTextSize: 14,
-    tabPaddingHor: 10
+    tabPaddingHor: 10,
+    autoScroll: true
   };
 
   state = {
@@ -83,7 +88,8 @@ export class TabLayout extends React.Component<TabLayoutProps> {
     tabs: [],
     //指示器宽度
     indicateWidth: 30,
-    translateXAnimatedValue: new Animated.Value(0)
+    indicateMarginLeft: 0,
+    translateXAnimatedValue: new Animated.Value(this.props.tabPaddingHor)
   };
 
   getTabs(): Tab[] {
@@ -92,6 +98,7 @@ export class TabLayout extends React.Component<TabLayoutProps> {
 
   constructor(props) {
     super(props);
+
     this.state.translateXAnimatedValue.addListener((state) => {
       //设置当前偏移值
       this.animData.currentIndicateTranslateXValue = state.value;
@@ -109,15 +116,37 @@ export class TabLayout extends React.Component<TabLayoutProps> {
     });
   }
 
+  componentDidMount(): void {
+    if (this.props.dataArray !== undefined) {
+      this.props.dataArray.forEach((data, position) => {
+          let tab = this.newTab();
+          tab.setText(data);
+          this.addTab(tab);
+        }
+      );
+    }
+  }
+
   /**
    * 更新选中状态
    */
   componentDidUpdate(preProps) {
-    //选中
-    this.selectTab(this.props.selectedTab);
-    //动画更新 tabLayout 位置 选中的居中显示
-    if (preProps.selectedTab !== this.props.selectedTab)
+    //tab改变 或 pos 改变
+    if (preProps.selectedTab !== this.props.selectedTab
+      || preProps.selectedPos !== this.props.selectedPos) {
+      let selectTab = null;
+      if (preProps.selectedPos !== this.props.selectedPos
+        && this.props.selectedPos !== undefined
+        && this.props.selectedPos < this.state.tabs.length) {
+        selectTab = this.state.tabs[this.props.selectedPos];
+      } else if (this.props.selectedTab !== undefined) {
+        selectTab = this.props.selectedTab;
+      }
+      //选中
+      this.selectTab(selectTab);
+      //动画更新 tabLayout 位置 选中的居中显示
       this.animScrollView();
+    }
   }
 
   /**
@@ -168,19 +197,25 @@ export class TabLayout extends React.Component<TabLayoutProps> {
   selectTab(selectedTab: Tab) {
     if (this.selectedTab === selectedTab) {
       //监听:重新选中
-      this.props.onTabSelectedListener?.onTabReselected(selectedTab);
-      //更新选中状态
-      this.updateSelect(selectedTab);
+      if (this.props.onTabSelectedListener?.onTabReselected !== undefined) {
+        this.props.onTabSelectedListener?.onTabReselected(selectedTab);
+      }
     } else {
       //监听:旧tab取消选中
-      this.props.onTabSelectedListener?.onTabUnselected(this.selectedTab);
+      if (this.props.onTabSelectedListener?.onTabUnselected instanceof function () {}) {
+        this.props.onTabSelectedListener?.onTabUnselected(this.selectedTab);
+      }
       //设置当前选中的tab
       this.selectedTab = selectedTab;
       //监听:选中新的tab
-      this.props.onTabSelectedListener?.onTabSelected(this.selectedTab);
-      //更新选中状态
-      this.updateSelect(selectedTab);
+
+      debugger
+      if (this.props.onTabSelectedListener?.onTabSelected !== undefined) {
+        this.props.onTabSelectedListener?.onTabSelected(this.selectedTab, this.state.tabs.indexOf(this.selectedTab));
+      }
     }
+    //更新选中状态
+    this.updateSelect(selectedTab);
   }
 
   getTabMinWidth() {
@@ -193,22 +228,27 @@ export class TabLayout extends React.Component<TabLayoutProps> {
    */
   updateSelect(selectedTab) {
     //计算指示条 坐标需要的偏移值
-    let indicateTranslateX = 0;
+    let indicateTranslateX = this.props.tabPaddingHor;
     this.state.tabs.forEach((tab: Tab, index) => {
       //tab.viewRef.current !=null
       // 判断初始化是否完成
-      if (tab.viewRef.current != null) {
+      if (tab.viewRef !== undefined && tab.viewRef.current !== undefined) {
         //遍历所有 并更新
+
+        //更新文本
         tab.viewRef.current.setSelect(selectedTab === tab);
-        //遍历当前的tab的宽度
-        let tabViewWidth = tab.viewRef.current.tabViewWidth;
-        //如果遍历的tab 与已经选中tab 相等  则设置指示条left/width
-        if (selectedTab === tab) {
-          indicateTranslateX += this.props.tabPaddingHor;
-          let width = tabViewWidth - 2 * this.props.tabPaddingHor;
-          this.animIndicator(indicateTranslateX, width);
-        } else {
-          indicateTranslateX += tabViewWidth;
+
+        //更新指示器
+        if (this.props.autoScroll) {
+          //遍历当前的tab的宽度
+          let tabViewWidth = tab.viewRef.current.tabViewWidth;
+          //如果遍历的tab 与已经选中tab 相等  则设置指示条left/width
+          if (selectedTab === tab) {
+            let width = tabViewWidth - 2 * this.props.tabPaddingHor;
+            this.animIndicator(indicateTranslateX, width);
+          } else {
+            indicateTranslateX += tabViewWidth;
+          }
         }
       }
     });
@@ -239,6 +279,9 @@ export class TabLayout extends React.Component<TabLayoutProps> {
     this.animData.dIndicateTranslateXValue = this.animData.toIndicateTranslateXValue - this.animData.fromIndicateTranslateXValue;
 
     //设置指示器宽度 from  /  to  /  d
+    if (this.animData.currentWidthValue === undefined || this.animData.currentWidthValue === 0) {
+      this.animData.currentWidthValue = width;
+    }
     this.animData.fromWidthValue = this.animData.currentWidthValue;
     this.animData.toWidthValue = width;
     this.animData.dWidthValue = this.animData.toWidthValue - this.animData.fromWidthValue;
@@ -254,7 +297,27 @@ export class TabLayout extends React.Component<TabLayoutProps> {
     this.transAnim.start();
   }
 
-  componentWillUnmount(): void {
+  /**
+   * 指示器滚动
+   * @param position
+   * @param offset
+   */
+  onScrollTo(position: number, offset: number) {
+    //计算指示条 坐标需要的偏移值
+    let indicateTranslateX = 0;
+    this.state.tabs?.forEach((tab: Tab, index) => {
+      if (index <= position) {
+        let tabViewWidth = tab.viewRef.current.tabViewWidth;
+        if (index === position && position < this.state.tabs.length - 1) {
+          let willTrans = tabViewWidth / 2 + this.state.tabs[index + 1].viewRef.current.tabViewWidth / 2;
+          indicateTranslateX += (willTrans * offset);
+          if (!isNaN(indicateTranslateX))
+            this.setState({ indicateMarginLeft: indicateTranslateX });
+        } else {
+          indicateTranslateX += tabViewWidth;
+        }
+      }
+    });
   }
 
   /**
@@ -268,12 +331,12 @@ export class TabLayout extends React.Component<TabLayoutProps> {
       this.animData.currentScrollX -
       this.tabLayoutWidth / 2 +
       this.animData.toWidthValue / 2;
-    console.log('--------------------');
+    // console.log('--------------------');
+    //
+    // console.log('this.animData.currentScrollX:' + this.animData.currentScrollX);
+    // console.log('--------------------');
 
-    console.log('this.animData.currentScrollX:' + this.animData.currentScrollX);
-    console.log('--------------------');
-
-    console.log('滚动值:' + scrollX);
+    // console.log('滚动值:' + scrollX);
     if (!isNaN(scrollX))
       scrollView.scrollTo({ x: scrollX, y: 0, animated: true });
   }
@@ -302,6 +365,7 @@ export class TabLayout extends React.Component<TabLayoutProps> {
             transform: [{
               translateX: this.state.translateXAnimatedValue
             }],
+            marginLeft: this.state.indicateMarginLeft,
             width: this.state.indicateWidth,
             height: 3,
             borderRadius: 4,

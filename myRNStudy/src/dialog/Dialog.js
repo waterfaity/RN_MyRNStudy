@@ -1,8 +1,8 @@
 import React from 'react';
 import { Modal } from 'react-native';
-import type { BaseDialogProps } from '../index';
+import type { DialogProps } from '../index';
 
-class BaseDialog extends React.Component<BaseDialogProps> {
+class Dialog extends React.Component<DialogProps> {
   static defaultProps = {
     visible: false,
     cancelAble: true,
@@ -28,9 +28,7 @@ class BaseDialog extends React.Component<BaseDialogProps> {
   render(): React.ReactNode {
     return <Modal
       { ...this.props }
-      //显示
       visible={ this.state.visible }
-      //返回请求
       onRequestClose={ () => {
         if (this.props.cancelAble) {
           this.setState({ visible: false });
@@ -42,4 +40,4 @@ class BaseDialog extends React.Component<BaseDialogProps> {
   }
 }
 
-export default BaseDialog;
+export default Dialog;

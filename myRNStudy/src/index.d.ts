@@ -1,20 +1,26 @@
 import {ModalBaseProps, ModalPropsAndroid, ModalPropsIOS, ViewProps} from "react-native";
+import Dialog from "../src/dialog/Dialog"
 
-export interface BaseDialogProps extends ModalBaseProps, ModalPropsIOS, ModalPropsAndroid, ViewProps {
-
-    //是否可以取消
-    cancelAble?: Boolean,
-    //弹窗小时
+export interface DialogInterfaceProps {
+    onClick?: (dialog: Dialog, which: 'BUTTON_NEGATIVE' | 'BUTTON_NEUTRAL' | 'BUTTON_POSITIVE') => {}
+    onShow?: () => {}
     onDismiss?: () => void,
 }
 
-export interface AlertDialogProps extends BaseDialogProps {
+export interface DialogProps extends ModalBaseProps, ModalPropsIOS, ModalPropsAndroid, DialogInterfaceProps, ViewProps {
+    //是否可以取消
+    cancelAble?: Boolean,
+}
+
+export interface AlertDialogProps extends DialogProps {
     //标题
     title?: String,
     //内容
-    content?: String,
+    message?: String,
+    //中立按钮文本
+    neutralText?: String,
     //取消文本
-    cancelText?: String,
+    negationText?: String,
     //确定文本
-    ensureText?: String,
+    positiveText?: String,
 }

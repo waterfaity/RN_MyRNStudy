@@ -37,7 +37,7 @@ class AlertDialog extends React.Component<AlertDialogProps> {
             } }>
               { this.props.negationText && <Text style={ { fontSize: 14, paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5 } }>{ this.props.negationText }</Text> }
             </Pressable>
-            {/*neutrol 按钮*/ }
+            {/*neutral 按钮*/ }
             <Pressable style={ { position: 'absolute', marginLeft: 'auto', right: 0 } } onPress={ () => {
               if (this.props.onClick !== undefined)
                 this.props.onClick(this, 'BUTTON_NEUTRAL');
@@ -45,7 +45,6 @@ class AlertDialog extends React.Component<AlertDialogProps> {
               { this.props.neutralText && <Text style={ { fontSize: 14, paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5 } }>{ this.props.neutralText }</Text> }
             </Pressable>
           </View> }
-
         </View>
       </View>
     </Dialog>;

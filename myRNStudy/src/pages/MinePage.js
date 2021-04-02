@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import AlertDialog from '../dialog/AlertDialog';
+import InputDialog from '../dialog/InputDialog';
 
 export default class MinePage extends React.Component {
   static navigationOptions = {
@@ -20,7 +21,8 @@ export default class MinePage extends React.Component {
       } }>
         <Text>abc</Text>
       </Pressable>
-      <AlertDialog
+      <InputDialog
+        inputProps={ { placeholder: '请输入内容(限100字)', maxLength: 100 } }
         onClick={ (dialog, which) => {
           if (which === 'BUTTON_NEGATIVE') {
             this.setState({ visible: false });
@@ -31,11 +33,9 @@ export default class MinePage extends React.Component {
         onDismiss={ () => {
           this.setState({ visible: false });
         } }
-        title={ '提示' }
-        message={ '你好呀' }
-        positiveText={ '确定' }
+        title={ '请输入评论' }
+        positiveText={ '评论' }
         negationText={ '取消' }
-        neutralText={ '同意' }
         visible={ this.state.visible }/>
       {/*<StatusBar animated={} />*/ }
     </View>;

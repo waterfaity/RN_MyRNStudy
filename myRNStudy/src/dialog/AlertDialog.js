@@ -18,9 +18,10 @@ class AlertDialog extends React.Component<AlertDialogProps> {
       <View style={ { backgroundColor: shadowDialog, width: '100%', height: '100%', justifyContent: 'center' } }>
         <View style={ { padding: 15, borderRadius: 10, backgroundColor: '#FFFFFF', marginLeft: 25, marginRight: 25 } }>
           {/*标题*/ }
-          { this.props.title && <Text style={ { fontSize: 20, color: '#333333' } }>{ this.props.title }</Text> }
+          { this.props.title && <Text style={ { fontSize: 20, color: '#333333', marginBottom: 8 } }>{ this.props.title }</Text> }
           {/*内容*/ }
-          { this.props.message && <Text style={ { marginTop: 8, fontSize: 16, color: '#444444' } }>{ this.props.message }</Text> }
+          { this.props.contentView && this.props.contentView }
+          { this.props.message && <Text style={ { fontSize: 16, color: '#444444' } }>{ this.props.message }</Text> }
           {/*按钮*/ }
           { (this.props.positiveText || this.props.negationText || this.props.negationText) && <View style={ { marginTop: 20, flexDirection: 'row-reverse' } }>
             {/*positive 按钮*/ }

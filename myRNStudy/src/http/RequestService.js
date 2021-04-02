@@ -80,6 +80,23 @@ class RequestService {
     const api = '/cookMenu/praise';
     HttpRequest.requestPost(api, { userId: userId, commentId: commentId, praise: praise }, callback);
   }
+
+  /**
+   * 添加评论
+   * @param userId
+   * @param cookMenuId
+   * @param parentId
+   * @param content
+   * @param callback
+   */
+  cookMenuCommentAddComment(userId: String, cookMenuId: number, parentId: number, content: String, callback: BaseCallback<BaseResponse<{
+    commentId: number,
+    userId: String,
+    praise: number
+  }>>) {
+    const api = '/cookMenu/addComment';
+    HttpRequest.requestPost(api, { userId: userId, cookMenuId: cookMenuId, parentId: parentId, content: content }, callback);
+  }
 }
 
 const requestService = new RequestService();

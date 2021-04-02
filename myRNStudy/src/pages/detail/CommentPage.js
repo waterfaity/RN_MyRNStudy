@@ -6,6 +6,7 @@ import requestService from '../../http/RequestService';
 import AppConfig from '../../config/AppConfig';
 import { ColorBgInput, ColorGray, ColorTheme, ColorWhite, TextColorLight, TextColorMain } from '../../../resources/Colors';
 import Button from '../../components/Button';
+import InputDialog from '../../dialog/InputDialog';
 
 let icPraise = require('../../../resources/images/ic_praise.png');
 let icPraised = require('../../../resources/images/ic_praised.png');
@@ -17,8 +18,8 @@ export default class CommentPage extends React.Component<Props> {
   state = {
     commendList: [],
     isLoading: false,
-    placeHolder: '请输入内容',
-    commitText: '评论'
+    replyDialogVisible: false,
+    replyDialogPlaceHolder: ''
   };
 
   pageNo: number = 1;
@@ -60,7 +61,26 @@ export default class CommentPage extends React.Component<Props> {
 
   render(): React.ReactNode {
     return <View style={ { flex: 1 } }>
+      {/*回复*/ }
+      <InputDialog
+        inputProps={ { placeholder: this.state.replyDialogPlaceHolder, maxLength: 100 } }
+        onClick={ (dialog, which) => {
 
+        } }
+        onInput={ (dialog, which, text) => {
+          this.setState({ replyDialogVisible: false });
+          if (which === 'BUTTON_POSITIVE') {
+            this.commitComment(text, this.replyToCommentBean);
+          }
+        } }
+        onDismiss={ () => {
+          this.replyToCommentBean = undefined;
+          this.setState({ replyDialogVisible: false });
+        } }
+        positiveText={ '回复' }
+        negationText={ '取消' }
+        visible={ this.state.replyDialogVisible }/>
+      {/*评论列表*/ }
       <FlatList
         style={ { marginBottom: 60 } }
         keyExtractor={ (value, index) => {return index;} }
@@ -82,7 +102,10 @@ export default class CommentPage extends React.Component<Props> {
         data={ this.state.commendList }
         renderItem={ (itemInfo: ListRenderItemInfo<CommentBean>) => {
           let itemBean: CommentBean = itemInfo.item;
-          return <Pressable onPress={ () => {this.shoReplyDialog(itemBean);} }>
+          return <Pressable onPress={ () => {
+            this.replyToCommentBean = itemBean;
+            this.setState({ replyDialogVisible: true, replyDialogPlaceHolder: '回复:' + itemBean.userNickName });
+          } }>
             <View style={ { paddingLeft: 15, paddingRight: 15, paddingTop: 10 } }>
               {/*头像*/ }
               <Image style={ { marginLeft: 15, marginTop: 15, position: 'absolute', width: 35, height: 35, borderRadius: 20 } } source={ { uri: itemBean.userIcon } }/>
@@ -110,9 +133,9 @@ export default class CommentPage extends React.Component<Props> {
       {/*  评论/回复*/ }
       <View style={ { flexDirection: 'row', height: 55, paddingTop: 8, paddingBottom: 8, paddingLeft: 10, paddingRight: 10, position: 'absolute', marginTop: 'auto', bottom: 0, width: '100%', backgroundColor: ColorWhite } }>
         {/*输入框*/ }
-        <TextInput onChangeText={ (text) => {this.commentInput = text;} } placeholder={ this.state.placeHolder } style={ { padding: 5, marginRight: 80, height: '100%', width: '83%', backgroundColor: ColorBgInput, borderRadius: 5 } }/>
+        <TextInput multiline={ true } onChangeText={ (text) => {this.commentInput = text;} } placeholder={ '请输入评论内容' } style={ { padding: 5, marginRight: 80, height: '100%', width: '83%', backgroundColor: ColorBgInput, borderRadius: 5 } }/>
         {/*发送按钮*/ }
-        <Button onPress={ () => {this.requestComment();} } title={ this.state.commitText } style={ { position: 'absolute', marginLeft: 'auto', color: ColorWhite, right: 0, backgroundColor: ColorTheme, borderRadius: 5, width: '15%', height: '100%' } }/>
+        <Button onPress={ () => {this.commitComment(this.commentInput);} } title={ '评论' } style={ { position: 'absolute', marginLeft: 'auto', color: ColorWhite, right: 0, backgroundColor: ColorTheme, borderRadius: 5, width: '15%', height: '100%' } }/>
       </View>
     </View>;
   }
@@ -120,8 +143,21 @@ export default class CommentPage extends React.Component<Props> {
   /**
    * 评论/回复
    */
-  requestComment() {
+  commitComment(content: String, replyToCommentBean?: CommentBean) {
+    requestService.cookMenuCommentAddComment(
+      AppConfig.userId,
+      this.props.cookMenu.id,
+      replyToCommentBean === undefined || replyToCommentBean === null ? 0 : replyToCommentBean.id,
+      content,
+      {
+        onSuccess: (result) => {
+          console.log(JSON.stringify(result));
+          this.replyToCommentBean = null;
+        },
+        onError: (errCode, msg) => {
 
+        }
+      });
   }
 
   /**
@@ -147,11 +183,4 @@ export default class CommentPage extends React.Component<Props> {
     }
   }
 
-  /**
-   * 回复dialog
-   * @param itemBean
-   */
-  shoReplyDialog(itemBean: CommentBean) {
-
-  }
 }

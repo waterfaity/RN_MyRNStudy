@@ -8,6 +8,7 @@ import { ColorTheme } from '../../resources/Colors';
 import AppConfig from '../config/AppConfig';
 import BaseResponse from '../http/BaseResponse';
 import UserBean from '../data/UserBean';
+import { BASE_URL } from '../http/HttpConfig';
 
 export default class LoginPage extends React.Component {
 
@@ -80,6 +81,7 @@ export default class LoginPage extends React.Component {
         },
         onError: (errCode, errMsg) => {
           this.dialogRef.current.dismiss();
+          alert(errMsg+":"+BASE_URL);
         }
       });
     }

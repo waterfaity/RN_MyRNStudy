@@ -4,7 +4,7 @@ import { Image, StatusBar, StyleSheet, TextInput, View } from 'react-native';
 import Button from '../components/Button';
 import LoadingDialog from '../dialog/LoadingDialog';
 import requestService from '../http/RequestService';
-import { ColorTheme } from '../../resources/Colors';
+import { ColorGray, ColorTheme, ColorWhite } from '../../resources/Colors';
 import AppConfig from '../config/AppConfig';
 import BaseResponse from '../http/BaseResponse';
 import UserBean from '../data/UserBean';
@@ -70,6 +70,7 @@ export default class LoginPage extends React.Component {
       requestService.login(this.state.userName, this.state.password, {
         onSuccess: (result: BaseResponse<UserBean>) => {
           AppConfig.userId = result.data.userId;
+          AppConfig.userBean = result.data;
           this.dialogRef.current.dismiss();
           this.saveAccountInfo(JSON.stringify(result.data));
           //跳转页面
@@ -81,7 +82,7 @@ export default class LoginPage extends React.Component {
         },
         onError: (errCode, errMsg) => {
           this.dialogRef.current.dismiss();
-          alert(errMsg+":"+BASE_URL);
+          alert(errMsg + ':' + BASE_URL);
         }
       });
     }
@@ -126,7 +127,7 @@ export default class LoginPage extends React.Component {
       {/* 登录 */ }
       <Button
         style={ styles.login }
-        title="登录"
+        textProps={ { value: '登录' } }
         onPress={ () => this.onLoginPress() }/>
     </View>;
   }
@@ -164,8 +165,8 @@ const styles = StyleSheet.create({
     width: '85%'
   },
   login: {
-    marginTop: 40,
     width: '90%',
-    height: 50
+    height:50,
+    marginTop: 40
   }
 });

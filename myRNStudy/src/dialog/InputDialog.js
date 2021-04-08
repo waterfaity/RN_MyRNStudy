@@ -1,5 +1,5 @@
 import React from 'react';
-import type { InputDialogProps } from '../index';
+import type { InputDialogProps } from './index';
 import AlertDialog from './AlertDialog';
 import { TextInput } from 'react-native';
 import { ColorTheme } from '../../resources/Colors';

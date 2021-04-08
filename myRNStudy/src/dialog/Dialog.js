@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from 'react-native';
-import type { DialogProps } from '../index';
+import type { DialogProps } from './index';
 
 class Dialog extends React.Component<DialogProps> {
   static defaultProps = {

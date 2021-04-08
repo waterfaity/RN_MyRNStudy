@@ -1,7 +1,7 @@
 import Dialog from './Dialog';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import type { AlertDialogProps } from '../index';
+import type { AlertDialogProps } from './index';
 import { ColorTheme } from '../../resources/Colors';
 
 const shadowDialog = '#00000066';

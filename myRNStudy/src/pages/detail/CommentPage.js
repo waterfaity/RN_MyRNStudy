@@ -143,11 +143,13 @@ export default class CommentPage extends React.Component<Props> {
           </View>;
         } }/>
       {/*  评论/回复*/ }
-      <View style={ { flexDirection: 'row', height: 55, paddingTop: 8, paddingBottom: 8, paddingLeft: 10, paddingRight: 10, position: 'absolute', marginTop: 'auto', bottom: 0, width: '100%', backgroundColor: ColorWhite } }>
+      <View style={ { flexDirection: 'row', alignItems: 'center', height: 55, paddingTop: 8, paddingBottom: 8, paddingLeft: 10, paddingRight: 10, position: 'absolute', marginTop: 'auto', bottom: 0, width: '100%', backgroundColor: ColorWhite } }>
         {/*输入框*/ }
         <TextInput multiline={ true } value={ this.state.commentInput } onChangeText={ (text) => {this.setState({ commentInput: text });} } placeholder={ '请输入评论内容' } style={ { padding: 5, marginRight: 80, height: '100%', width: '83%', backgroundColor: ColorBgInput, borderRadius: 5 } }/>
         {/*发送按钮*/ }
-        <Button onPress={ () => {this.commitComment(this.state.commentInput);} } title={ '评论' } style={ { position: 'absolute', marginLeft: 'auto', color: ColorWhite, right: 0, backgroundColor: ColorTheme, borderRadius: 5, width: '15%', height: '100%' } }/>
+        <Button onPress={ () => {this.commitComment(this.state.commentInput);} }
+                textProps={ { value: '评论', style: { color: ColorWhite } } }
+                style={ { position: 'absolute', marginLeft: 'auto', right: 10, backgroundColor: ColorTheme, borderRadius: 5, width: '15%', minWidth: 10, minHeight: 10, height: '100%' } }/>
       </View>
     </View>;
   }
@@ -207,5 +209,4 @@ export default class CommentPage extends React.Component<Props> {
         });
     }
   }
-
 }

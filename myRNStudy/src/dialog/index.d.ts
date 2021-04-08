@@ -1,5 +1,5 @@
 import {ModalBaseProps, ModalPropsAndroid, ModalPropsIOS, TextInputProps, ViewProps} from "react-native";
-import Dialog from "../src/dialog/Dialog"
+import Dialog from "./Dialog"
 import * as React from "react";
 
 export interface DialogInterfaceProps {
